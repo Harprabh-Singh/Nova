@@ -250,3 +250,4 @@ export type Principal = {
 	/** Present only in Entra mode: the validated Entra object id. */
 	entraObjectId?: string
 }
+// hist: 2026-09-20T11:48:06+05:30
