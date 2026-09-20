@@ -590,3 +590,4 @@ test("the Entra health check performs no network probe", async () => {
 	assert.equal(health.ok, true)
 	assert.match(health.detail, /no network probe/)
 })
+// hist: 2026-09-20T22:28:09+05:30
