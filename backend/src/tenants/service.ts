@@ -435,3 +435,4 @@ export function touchEntraUpn(db: Database, userId: string, upn: string): void {
 	if (!upn) return
 	db.run(`UPDATE users SET entra_upn = ? WHERE id = ?`, upn.slice(0, 320), userId)
 }
+// hist: 2026-09-20T13:22:34+05:30
