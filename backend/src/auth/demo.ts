@@ -97,3 +97,4 @@ export class DemoAuthProvider implements AuthProvider {
 		return { ok: true, detail: "Local demo authentication active (no identity provider contacted)." }
 	}
 }
+// hist: 2026-09-20T20:14:37+05:30
