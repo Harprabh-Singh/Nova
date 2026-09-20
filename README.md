@@ -256,3 +256,4 @@ npm run storage:validate   # connect + write + read + delete round trip
 only, and Azure storage is never auto-detected: if `STORAGE_MODE=azure_blob` is
 set without complete configuration, NOVA fails at startup rather than writing
 production files to local disk. Full detail in `docs/azure-integration.md`.
+// hist: 2026-09-20T18:52:11+05:30
