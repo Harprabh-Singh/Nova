@@ -154,22 +154,32 @@ export class ConversationService {
 			input.action ? JSON.stringify(input.action) : null,
 			now,
 		)
-		for (const citation of input.citations ?? []) {
+		const citations = input.citations ?? []
+		if (citations.length > 0) {
+			// One multi-row parameterized INSERT instead of one network round trip per citation.
+			// Values are pushed positionally into a flat params array — no string interpolation of data.
+			const placeholderGroups = citations.map(() => `(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+			const params: unknown[] = []
+			for (const citation of citations) {
+				params.push(
+					`cit_${randomUUID()}`,
+					input.tenantId,
+					id,
+					citation.documentId,
+					citation.versionId,
+					citation.chunkId,
+					citation.documentTitle,
+					citation.department,
+					citation.version,
+					citation.section,
+					citation.score,
+				)
+			}
 			this.db.run(
 				`INSERT INTO citations (id, tenant_id, message_id, document_id, version_id, chunk_id,
 					document_title, department, version, section, score)
-				 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-				`cit_${randomUUID()}`,
-				input.tenantId,
-				id,
-				citation.documentId,
-				citation.versionId,
-				citation.chunkId,
-				citation.documentTitle,
-				citation.department,
-				citation.version,
-				citation.section,
-				citation.score,
+				 VALUES ${placeholderGroups.join(", ")}`,
+				...params,
 			)
 		}
 		this.db.run(
@@ -178,7 +188,34 @@ export class ConversationService {
 			input.conversationId,
 			input.tenantId,
 		)
-		return this.messages(input.tenantId, input.conversationId).find((m) => m.id === id)!
+		// Return the message directly from the known inserted fields.
+		// Previously this called this.messages() which reloaded the entire conversation
+		// history and issued one citation SELECT per historical message (N+1 pattern).
+		return {
+			id,
+			tenantId: input.tenantId,
+			conversationId: input.conversationId,
+			role: input.role,
+			content: input.content,
+			grounding: input.grounding ?? null,
+			confidence: input.confidence ?? null,
+			provider: input.provider ?? null,
+			latencyMs: input.latencyMs ?? null,
+			citations: citations.map((c, index) => ({
+				index: index + 1,
+				documentId: c.documentId,
+				versionId: c.versionId,
+				documentTitle: c.documentTitle,
+				department: c.department,
+				version: c.version,
+				section: c.section,
+				chunkId: c.chunkId,
+				classification: "internal" as const,
+				score: c.score,
+			})),
+			action: input.action ?? null,
+			createdAt: now,
+		}
 	}
 
 	messages(tenantId: string, conversationId: string): Message[] {
@@ -251,3 +288,4 @@ export class ConversationService {
 		}
 	}
 }
+// hist: 2026-09-21T19:23:51+05:30
