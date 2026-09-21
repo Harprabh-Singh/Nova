@@ -169,3 +169,4 @@ export function extractPdf(buffer: Buffer): ExtractResult {
 	if (streams.length === 0) warnings.push("PDF had no decodable content streams; extraction may be partial.")
 	return { text, sourceType: "pdf", warnings }
 }
+// hist: 2026-09-21T13:08:55+05:30
