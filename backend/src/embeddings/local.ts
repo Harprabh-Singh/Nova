@@ -133,3 +133,4 @@ export class LocalEmbeddingProvider implements EmbeddingProvider {
 		}
 	}
 }
+// hist: 2026-09-21T08:05:22+05:30
