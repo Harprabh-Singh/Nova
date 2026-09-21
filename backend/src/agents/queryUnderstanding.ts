@@ -94,3 +94,4 @@ export function understandQuery(db: Database, tenantId: string, question: string
 		machineIds,
 	}
 }
+// hist: 2026-09-21T16:58:04+05:30
