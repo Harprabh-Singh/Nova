@@ -197,3 +197,4 @@ export class LocalVectorStore implements VectorStore {
 		return { ok: true, detail: `Local SQLite vector store with ${row?.n ?? 0} indexed chunks.` }
 	}
 }
+// hist: 2026-09-21T10:44:03+05:30
