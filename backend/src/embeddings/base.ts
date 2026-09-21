@@ -51,3 +51,4 @@ export function bufferToFloats(buffer: Uint8Array | null | undefined): Float32Ar
 	const copy = new Uint8Array(buffer)
 	return new Float32Array(copy.buffer, copy.byteOffset, Math.floor(copy.byteLength / 4))
 }
+// hist: 2026-09-21T09:17:48+05:30
