@@ -46,3 +46,4 @@ export function reconcileCitations(
 	const used = referenced.size > 0 ? citations.filter((c) => referenced.has(c.index)) : citations
 	return { answer: cleaned.replace(/[ \t]{2,}/g, " ").trim(), citations: used, fabricatedMarkers: fabricated }
 }
+// hist: 2026-09-21T18:11:29+05:30
