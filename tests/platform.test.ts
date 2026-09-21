@@ -258,3 +258,4 @@ test("activity is audited without leaking document contents", async () => {
 		assert.ok(!String(entry.detail ?? "").includes("pre-trip inspection"), "document bodies must never be logged")
 	}
 })
+// hist: 2026-09-21T22:01:37+05:30
