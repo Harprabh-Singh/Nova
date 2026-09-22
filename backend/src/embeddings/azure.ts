@@ -145,3 +145,4 @@ export class AzureEmbeddingProvider implements EmbeddingProvider {
 		}
 	}
 }
+// hist: 2026-09-22T23:44:42+05:30
