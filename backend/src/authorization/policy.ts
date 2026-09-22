@@ -171,3 +171,4 @@ export function accessSqlFilter(scope: AccessScope): { sql: string; params: any[
 	params.push(scope.roleKey)
 	return { sql, params }
 }
+// hist: 2026-09-22T10:14:07+05:30
