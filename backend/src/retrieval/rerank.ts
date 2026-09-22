@@ -44,3 +44,4 @@ export function rerank(candidates: RetrievedChunk[], signals: RerankSignals, top
 	}
 	return picked
 }
+// hist: 2026-09-22T16:21:15+05:30
