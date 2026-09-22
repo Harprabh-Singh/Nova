@@ -28,3 +28,4 @@ export const HEDGE_PATTERN = new RegExp(HEDGE_PATTERNS.map((r) => r.source).join
 export function isHedgedAnswer(text: string): boolean {
 	return HEDGE_PATTERN.test(text)
 }
+// hist: 2026-09-22T17:34:41+05:30
