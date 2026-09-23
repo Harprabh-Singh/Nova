@@ -331,3 +331,4 @@ export function setDbForTesting(db: Database | null): void {
 /** Backwards-compatible alias for the local SQLite schema (pre-Phase-3 name). */
 export const SCHEMA = SQLITE_SCHEMA
 // hist: 2026-09-20T10:31:52+05:30
+// hist: 2026-09-23T12:41:49+05:30
