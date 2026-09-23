@@ -1,0 +1,695 @@
+/* ==========================================================================
+   NOVA — onboarding
+   Same language as the home page: dark editorial base, brutalist offset
+   shadows, one accent per step, monospaced instrumentation. Motion primitives
+   live in anim.css; this file only styles. Everything is scoped under .obx so
+   the rest of the product UI is untouched.
+   ========================================================================== */
+
+.obx {
+	/* Onboarding palette = canonical NOVA tokens (styles/tokens.css).
+	   The duplicated --ink / --ink-2 / --panel / --line / --acid definitions
+	   that used to live here held the same values as tokens.css, so these are
+	   aliases and the appearance is preserved. --editorial stays local: this
+	   is the only surface that uses a serif, so it is not a shared semantic.
+	   --line-strong was 0.22 here against the canonical 0.2; it now resolves
+	   to the canonical hairline instead of a near-duplicate of it. */
+	--ink: var(--nova-bg);
+	--ink-2: var(--nova-bg-elevated);
+	--panel: var(--nova-bg-plane);
+	--line: var(--nova-border);
+	--line-strong: var(--nova-border-strong);
+	--bone: var(--nova-fg-bone);
+	--text: var(--nova-fg);
+	--muted: var(--nova-fg-muted);
+	--faint: var(--nova-fg-faint);
+	--acid: var(--nova-accent);
+	--magenta: var(--nova-signal-magenta);
+	--cyan: var(--nova-signal-cyan);
+	--violet: var(--nova-signal-violet);
+	--display: var(--nova-font-display);
+	--mono: var(--nova-font-mono);
+	--editorial: "Instrument Serif", "Cormorant Garamond", Georgia, serif;
+
+	position: relative;
+	min-height: 100vh;
+	background: var(--ink);
+	color: var(--text);
+	overflow-x: clip;
+	isolation: isolate;
+}
+
+.obx * { box-sizing: border-box; }
+.obx p { margin: 0; }
+.obx button { font: inherit; cursor: pointer; }
+.obx h1, .obx h2, .obx h3 {
+	font-family: var(--display);
+	font-weight: 900;
+	letter-spacing: -0.03em;
+	line-height: 0.92;
+	margin: 0;
+	text-transform: uppercase;
+}
+
+/* Architectural grid + grain, matching the hero's material treatment. */
+.obx-grid {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	background-image:
+		linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+		linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+	background-size: 118px 118px;
+	mask-image: radial-gradient(circle at 50% 35%, #000 0%, transparent 78%);
+	-webkit-mask-image: radial-gradient(circle at 50% 35%, #000 0%, transparent 78%);
+}
+.obx-glow {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	background:
+		radial-gradient(60% 45% at 78% 6%, rgba(201, 242, 77, 0.07), transparent 70%),
+		radial-gradient(50% 40% at 4% 92%, rgba(139, 92, 255, 0.08), transparent 72%);
+}
+
+/* ------------------------------------------------------------------- chrome */
+
+.obx-shell {
+	position: relative;
+	z-index: 1;
+	max-width: 1320px;
+	margin: 0 auto;
+	padding: 0 clamp(18px, 4vw, 48px) 130px;
+}
+
+.obx-top {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 22px 0 0;
+}
+.obx-logo {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	font-family: var(--display);
+	font-size: 19px;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+}
+.obx-logo .mark {
+	width: 11px;
+	height: 11px;
+	background: var(--acid);
+	transform: rotate(45deg);
+}
+.obx-logo .b { color: var(--acid); }
+.obx-logo .c { color: var(--violet); }
+
+.obx-top-right {
+	display: inline-flex;
+	align-items: center;
+	gap: 18px;
+}
+.obx-mode {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-family: var(--mono);
+	font-size: 9.5px;
+	font-weight: 600;
+	letter-spacing: 0.26em;
+	text-transform: uppercase;
+	color: var(--faint);
+}
+.obx-mode i {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--acid);
+	animation: an-pulse 2.6s ease-in-out infinite;
+}
+.obx-exit {
+	position: relative;
+	background: none;
+	border: 0;
+	padding: 4px 0;
+	color: var(--muted);
+	font-family: var(--mono);
+	font-size: 10px;
+	font-weight: 600;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+	transition: color 0.25s linear;
+}
+.obx-exit:hover { color: var(--text); }
+.obx-exit .an-underline { background: var(--acid); }
+
+/* -------------------------------------------------------------------- head */
+
+.obx-head {
+	padding: clamp(34px, 6vw, 74px) 0 clamp(26px, 4vw, 44px);
+	border-bottom: 1px solid var(--line);
+}
+.obx-kicker {
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	font-family: var(--mono);
+	font-size: 10.5px;
+	font-weight: 600;
+	letter-spacing: 0.3em;
+	text-transform: uppercase;
+	color: var(--acid);
+	margin-bottom: 20px;
+}
+.obx-kicker::before {
+	content: "";
+	width: 22px;
+	height: 1px;
+	background: currentColor;
+}
+.obx-title {
+	font-size: clamp(38px, 7.4vw, 104px);
+}
+.obx-title .out {
+	color: transparent;
+	-webkit-text-stroke: 2px var(--acid);
+}
+.obx-lede {
+	max-width: 56ch;
+	margin-top: 22px;
+	font-family: var(--mono);
+	font-size: 13px;
+	line-height: 1.85;
+	color: var(--muted);
+}
+
+/* ------------------------------------------------------------------- layout */
+
+.obx-body {
+	display: grid;
+	grid-template-columns: 250px 1fr;
+	gap: clamp(26px, 4vw, 64px);
+	padding-top: clamp(30px, 4vw, 54px);
+	align-items: start;
+}
+
+/* ----------------------------------------------------------------- step rail */
+
+.obx-rail {
+	position: sticky;
+	top: 34px;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+.obx-rail-step {
+	display: grid;
+	grid-template-columns: 54px 1fr;
+	align-items: center;
+	gap: 14px;
+	width: 100%;
+	padding: 16px 14px;
+	border: 0;
+	border-left: 3px solid var(--line);
+	background: none;
+	text-align: left;
+	color: var(--faint);
+	transition: color 0.3s linear, border-color 0.3s linear, background 0.3s linear;
+}
+.obx-rail-step:disabled { cursor: not-allowed; }
+.obx-rail-step .no {
+	font-family: var(--display);
+	font-size: 30px;
+	line-height: 0.8;
+	color: transparent;
+	-webkit-text-stroke: 1.5px currentColor;
+}
+.obx-rail-step .label {
+	font-family: var(--mono);
+	font-size: 10.5px;
+	font-weight: 600;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+}
+.obx-rail-step .sub {
+	display: block;
+	margin-top: 6px;
+	font-size: 9.5px;
+	letter-spacing: 0.16em;
+	color: rgba(237, 238, 233, 0.26);
+}
+.obx-rail-step:not(:disabled):hover { color: var(--muted); }
+.obx-rail-step.is-done {
+	color: var(--muted);
+	border-left-color: rgba(201, 242, 77, 0.45);
+}
+.obx-rail-step.is-active {
+	color: var(--text);
+	border-left-color: var(--acid);
+	background: linear-gradient(to right, rgba(201, 242, 77, 0.08), transparent 70%);
+}
+.obx-rail-step.is-active .no { -webkit-text-stroke-color: var(--acid); }
+
+.obx-rail-meta {
+	margin-top: 26px;
+	padding-top: 20px;
+	border-top: 1px solid var(--line);
+	font-family: var(--mono);
+	font-size: 9.5px;
+	line-height: 2.1;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: rgba(237, 238, 233, 0.3);
+}
+.obx-rail-meta b { color: var(--muted); font-weight: 600; }
+
+/* --------------------------------------------------------------- step panel */
+
+.obx-panel {
+	position: relative;
+	border: 3px solid #05050a;
+	background: var(--bone);
+	color: #0a0b0f;
+	padding: clamp(24px, 3vw, 44px);
+	box-shadow: 12px 12px 0 var(--acid);
+}
+.obx-panel.accent-cyan { box-shadow: 12px 12px 0 var(--cyan); }
+.obx-panel.accent-magenta { box-shadow: 12px 12px 0 var(--magenta); }
+
+.obx-panel-head {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 18px;
+	padding-bottom: 20px;
+	margin-bottom: 28px;
+	border-bottom: 2px solid rgba(5, 5, 10, 0.16);
+}
+.obx-panel-head h2 { font-size: clamp(22px, 2.5vw, 34px); }
+.obx-panel-head .count {
+	font-family: var(--mono);
+	font-size: 10px;
+	font-weight: 600;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+	color: rgba(10, 11, 15, 0.5);
+	white-space: nowrap;
+}
+
+.obx-fields {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 22px;
+}
+.obx-fields.one { grid-template-columns: 1fr; }
+.obx-fields.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.obx-fields + .obx-fields { margin-top: 22px; }
+.obx-span-2 { grid-column: 1 / -1; }
+
+.obx-field label {
+	display: block;
+	margin-bottom: 9px;
+	font-family: var(--mono);
+	font-size: 9.5px;
+	font-weight: 600;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+	color: rgba(10, 11, 15, 0.62);
+}
+.obx-field input,
+.obx-field select {
+	width: 100%;
+	padding: 13px 14px;
+	border: 2px solid #05050a;
+	border-radius: 0;
+	background: #fff;
+	color: #0a0b0f;
+	font-family: var(--mono);
+	font-size: 13px;
+	transition: box-shadow 0.2s linear, transform 0.2s var(--an-expo, cubic-bezier(0.16, 1, 0.3, 1));
+}
+.obx-field input::placeholder { color: rgba(10, 11, 15, 0.34); }
+.obx-field input:focus-visible,
+.obx-field select:focus-visible {
+	outline: 0;
+	box-shadow: 5px 5px 0 var(--acid);
+	transform: translate3d(-1px, -1px, 0);
+}
+.obx-field .hint {
+	display: block;
+	margin-top: 8px;
+	font-family: var(--mono);
+	font-size: 10px;
+	line-height: 1.7;
+	color: rgba(10, 11, 15, 0.5);
+}
+
+/* ------------------------------------------------------------------ dropzone */
+
+.obx-drop {
+	position: relative;
+	display: grid;
+	place-items: center;
+	gap: 10px;
+	padding: 40px 26px;
+	border: 2px dashed rgba(5, 5, 10, 0.4);
+	background: rgba(5, 5, 10, 0.035);
+	text-align: center;
+	transition: border-color 0.22s linear, background 0.22s linear, transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.obx-drop.is-over {
+	border-color: #05050a;
+	background: rgba(201, 242, 77, 0.24);
+	transform: translate3d(0, -3px, 0);
+}
+.obx-drop input[type="file"] {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	opacity: 0;
+	cursor: pointer;
+}
+.obx-drop .big {
+	font-family: var(--display);
+	font-size: clamp(18px, 2vw, 26px);
+	text-transform: uppercase;
+	letter-spacing: -0.02em;
+}
+.obx-drop .small {
+	font-family: var(--mono);
+	font-size: 10.5px;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: rgba(10, 11, 15, 0.55);
+}
+
+.obx-files {
+	list-style: none;
+	margin: 18px 0 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+.obx-file {
+	display: grid;
+	grid-template-columns: 1fr auto auto;
+	align-items: center;
+	gap: 14px;
+	padding: 11px 14px;
+	border: 2px solid #05050a;
+	background: #fff;
+	font-family: var(--mono);
+	font-size: 11.5px;
+}
+.obx-file .nm { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.obx-file .sz { color: rgba(10, 11, 15, 0.5); }
+.obx-file .tag {
+	padding: 3px 8px;
+	background: #05050a;
+	color: var(--acid);
+	font-size: 9px;
+	font-weight: 600;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+}
+
+/* -------------------------------------------------------------------- review */
+
+.obx-review {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 0;
+	border: 2px solid #05050a;
+}
+.obx-review div {
+	padding: 16px 18px;
+	border-bottom: 1px solid rgba(5, 5, 10, 0.14);
+	border-right: 1px solid rgba(5, 5, 10, 0.14);
+}
+.obx-review dt,
+.obx-review .k {
+	font-family: var(--mono);
+	font-size: 9px;
+	font-weight: 600;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+	color: rgba(10, 11, 15, 0.52);
+}
+.obx-review .v {
+	margin-top: 7px;
+	font-family: var(--display);
+	font-size: 17px;
+	text-transform: uppercase;
+	letter-spacing: -0.01em;
+	word-break: break-word;
+}
+.obx-pipeline {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 10px;
+	margin-top: 24px;
+	font-family: var(--mono);
+	font-size: 9.5px;
+	font-weight: 600;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: rgba(10, 11, 15, 0.56);
+}
+.obx-pipeline b { color: #0a0b0f; font-weight: 600; }
+.obx-pipeline span { color: rgba(10, 11, 15, 0.3); }
+
+/* ------------------------------------------------------------------ actions */
+
+.obx-alert {
+	margin-top: 24px;
+	padding: 14px 16px;
+	border: 2px solid #05050a;
+	background: var(--magenta);
+	color: #fff;
+	font-family: var(--mono);
+	font-size: 11.5px;
+	line-height: 1.7;
+	box-shadow: 5px 5px 0 #05050a;
+}
+
+.obx-actions {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px;
+	margin-top: 30px;
+	padding-top: 24px;
+	border-top: 2px solid rgba(5, 5, 10, 0.16);
+}
+
+.obx-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	padding: 15px 26px;
+	border: 3px solid #05050a;
+	background: #05050a;
+	color: var(--bone);
+	font-family: var(--mono);
+	font-size: 10.5px;
+	font-weight: 600;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+	box-shadow: 6px 6px 0 rgba(5, 5, 10, 0.28);
+	transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+		background 0.22s linear, color 0.22s linear;
+}
+.obx-btn:hover:not(:disabled) {
+	background: var(--acid);
+	color: #05050a;
+	transform: translate3d(-2px, -3px, 0);
+	box-shadow: 9px 10px 0 rgba(5, 5, 10, 0.34);
+}
+.obx-btn:hover:not(:disabled) i { transform: translate3d(6px, 0, 0); }
+.obx-btn i { font-style: normal; transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1); }
+.obx-btn:disabled { opacity: 0.45; cursor: not-allowed; box-shadow: none; }
+
+.obx-btn.ghost {
+	background: transparent;
+	color: #05050a;
+	box-shadow: none;
+}
+.obx-btn.ghost:hover:not(:disabled) { background: #05050a; color: var(--bone); }
+.obx-btn.ghost:hover:not(:disabled) i { transform: translate3d(-6px, 0, 0); }
+
+/* --------------------------------------------------------------------- done */
+
+.obx-done {
+	position: relative;
+	border: 3px solid #05050a;
+	background: var(--bone);
+	color: #0a0b0f;
+	padding: clamp(28px, 4vw, 54px);
+	box-shadow: 14px 14px 0 var(--acid);
+	transform-style: preserve-3d;
+	will-change: transform;
+	transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.obx-done .stamp {
+	display: inline-block;
+	padding: 7px 12px;
+	margin-bottom: 22px;
+	border: 2px solid #05050a;
+	background: var(--acid);
+	font-family: var(--mono);
+	font-size: 9.5px;
+	font-weight: 600;
+	letter-spacing: 0.26em;
+	text-transform: uppercase;
+}
+.obx-done h2 { font-size: clamp(30px, 4.6vw, 62px); }
+.obx-done .body {
+	max-width: 58ch;
+	margin-top: 20px;
+	font-family: var(--mono);
+	font-size: 13px;
+	line-height: 1.85;
+	color: rgba(10, 11, 15, 0.72);
+}
+.obx-done .obx-actions { justify-content: flex-start; }
+
+.obx-tally {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 0;
+	margin-top: 28px;
+	border: 2px solid #05050a;
+}
+.obx-tally div {
+	padding: 18px;
+	border-right: 1px solid rgba(5, 5, 10, 0.14);
+}
+.obx-tally div:last-child { border-right: 0; }
+.obx-tally .k {
+	font-family: var(--mono);
+	font-size: 9px;
+	font-weight: 600;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+	color: rgba(10, 11, 15, 0.52);
+}
+.obx-tally .v {
+	margin-top: 8px;
+	font-family: var(--display);
+	font-size: clamp(24px, 3vw, 38px);
+	text-transform: uppercase;
+}
+
+/* -------------------------------------------------------------------- strip */
+
+.obx-strip {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	z-index: 2;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 14px;
+	flex-wrap: wrap;
+	padding: 12px clamp(18px, 4vw, 48px);
+	border-top: 1px solid var(--line);
+	background: rgba(6, 7, 11, 0.9);
+	font-family: var(--mono);
+	font-size: 9px;
+	font-weight: 600;
+	letter-spacing: 0.26em;
+	text-transform: uppercase;
+	color: rgba(237, 238, 233, 0.4);
+}
+.obx-strip s { text-decoration: none; color: rgba(237, 238, 233, 0.18); }
+
+/* ------------------------------------------------------------------- busy */
+
+.obx-busy {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	font-family: var(--mono);
+	font-size: 10.5px;
+	font-weight: 600;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+	color: rgba(10, 11, 15, 0.66);
+}
+.obx-busy i {
+	width: 34px;
+	height: 3px;
+	background: rgba(5, 5, 10, 0.16);
+	overflow: hidden;
+	position: relative;
+}
+.obx-busy i::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: #05050a;
+	transform-origin: 0 50%;
+	animation: obx-sweep 1.1s ease-in-out infinite;
+}
+@keyframes obx-sweep {
+	0% { transform: translate3d(-100%, 0, 0); }
+	100% { transform: translate3d(100%, 0, 0); }
+}
+
+/* -------------------------------------------------------------- responsive */
+
+@media (max-width: 1000px) {
+	.obx-body { grid-template-columns: 1fr; }
+	.obx-rail {
+		position: relative;
+		top: 0;
+		flex-direction: row;
+		overflow-x: auto;
+		gap: 0;
+	}
+	.obx-rail-step {
+		flex: 1 0 auto;
+		grid-template-columns: auto 1fr;
+		border-left: 0;
+		border-bottom: 3px solid var(--line);
+		padding: 12px;
+	}
+	.obx-rail-step.is-active { border-bottom-color: var(--acid); background: none; }
+	.obx-rail-step.is-done { border-bottom-color: rgba(201, 242, 77, 0.45); }
+	.obx-rail-step .sub { display: none; }
+	.obx-rail-meta { display: none; }
+}
+
+@media (max-width: 720px) {
+	.obx-fields,
+	.obx-fields.three,
+	.obx-review,
+	.obx-tally { grid-template-columns: 1fr; }
+	.obx-panel { box-shadow: 7px 7px 0 var(--acid); padding: 20px; }
+	.obx-panel.accent-cyan { box-shadow: 7px 7px 0 var(--cyan); }
+	.obx-panel.accent-magenta { box-shadow: 7px 7px 0 var(--magenta); }
+	.obx-done { box-shadow: 8px 8px 0 var(--acid); }
+	.obx-actions { flex-direction: column-reverse; align-items: stretch; }
+	.obx-btn { justify-content: center; }
+	.obx-grid { display: none; }
+	.obx-tally div { border-right: 0; border-bottom: 1px solid rgba(5, 5, 10, 0.14); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.obx-mode i,
+	.obx-busy i::after { animation: none; }
+	.obx-btn,
+	.obx-btn i,
+	.obx-drop,
+	.obx-done { transition: none; }
+}

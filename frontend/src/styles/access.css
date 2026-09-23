@@ -1,0 +1,1174 @@
+/* ============================================================================
+   NOVA — /login  ·  THE ACCESS CHAMBER
+
+   Complete visual rebuild. One cinematic architectural room fills the
+   viewport: concrete side walls, a daylit central atrium opening, glass,
+   planting, and a wet stone floor. The editorial statement is printed onto
+   the left wall; the access terminal is recessed into the right wall. The
+   centre of the frame is never empty — it is the architectural threshold
+   that connects the two sides.
+
+   All 2D. One graded photograph, gradients, masks, shadows. No 3D.
+
+   SECTIONS
+     ACCESS PAGE        .access-page
+     ENVIRONMENT        .access-background .access-vignette .access-grid
+                        .access-grain
+     BRAND              .access-brand .access-status
+     LAYOUT             .access-stage .access-copy .access-console
+     TYPE               .access-kicker .access-heading .access-body
+     PRINCIPLES         .access-principles .access-principle
+     CONSOLE            .access-terminal .access-terminal-header
+                        .workspace-field .persona-register .persona-row
+                        .identity-summary .access-actions
+     FOOTER             .access-footer
+   ========================================================================== */
+
+/* =============================================================== ACCESS PAGE */
+
+.access-page {
+	/* Access palette = canonical NOVA tokens (see styles/tokens.css). */
+	--ink: var(--nova-bg);
+	--bone: var(--nova-fg-bone);
+	--muted: var(--nova-fg-faint);
+	--body: var(--nova-fg-muted);
+	--lime: var(--nova-accent);
+	--line: var(--nova-border-strong);
+	--line-soft: var(--nova-border);
+	--ease: var(--nova-ease);
+
+	/* Normalised: Access previously declared its own display stack with the
+	   family order inverted (Anton before Archivo Black), so the same heading
+	   could resolve to a different face here than on the approved landing
+	   page. It now consumes the canonical stack. No Access layout, size,
+	   weight or colour was changed. */
+	--display: var(--nova-font-display);
+	--ui: var(--nova-font-body);
+	--mono: var(--nova-font-mono);
+
+	--gutter: var(--nova-gutter);
+
+	position: relative;
+	isolation: isolate;
+	min-height: 100svh;
+	background: var(--ink);
+	color: var(--bone);
+	font-family: var(--ui);
+	overflow: hidden;
+	transition:
+		opacity 340ms var(--ease),
+		filter 340ms var(--ease);
+}
+
+@media (min-width: 1025px) {
+	.access-page {
+		height: 100svh;
+		overflow: hidden;
+	}
+}
+
+.access-page.is-leaving {
+	opacity: 0.3;
+	filter: blur(7px);
+}
+
+/* =============================================================== ENVIRONMENT */
+
+.access-background,
+.access-vignette,
+.access-grid,
+.access-grain {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+}
+
+.access-background {
+	overflow: hidden;
+}
+
+.access-background > * {
+	position: absolute;
+	inset: 0;
+}
+
+/* The room itself. Graded to KEEP midtones — concrete, glass, planting and
+   the floor all have to read without squinting. */
+.access-background .env-photo {
+	background: url("/assets/nova/hero-architecture.webp") 50% 48% / cover no-repeat;
+	filter: brightness(1.08) contrast(1.08) saturate(0.82);
+	transform: translate3d(var(--par-x, 0px), var(--par-y, 0px), 0) scale(1.045);
+	transition: transform 900ms var(--ease);
+}
+
+/* Green-black tint, kept light so the architecture survives. */
+.access-background .env-tint {
+	background:
+		radial-gradient(120% 90% at 50% 26%, rgba(198, 232, 190, 0.09), transparent 58%),
+		linear-gradient(180deg, rgba(7, 12, 9, 0.5) 0%, rgba(7, 10, 8, 0.12) 34%, rgba(6, 9, 7, 0.34) 100%);
+	mix-blend-mode: multiply;
+	opacity: 0.9;
+}
+
+/* Structural mass behind the type (left) and behind the terminal (right).
+   The centre stays open — that is the threshold. */
+.access-background .env-mass {
+	background:
+		linear-gradient(90deg, rgba(4, 6, 5, 0.9) 0%, rgba(4, 6, 5, 0.72) 22%, rgba(4, 6, 5, 0.12) 38%, transparent 46%),
+		linear-gradient(270deg, rgba(4, 6, 5, 0.9) 0%, rgba(4, 6, 5, 0.7) 20%, rgba(4, 6, 5, 0.12) 37%, transparent 46%);
+}
+
+/* The central architectural opening: daylight falling through the atrium,
+   haze in the shaft, depth at the far wall. Sits ON the photographed
+   opening rather than replacing it. */
+.access-background .env-threshold {
+	left: 50%;
+	top: 0;
+	right: auto;
+	bottom: 0;
+	width: min(30vw, 440px);
+	transform: translateX(-50%);
+}
+
+.access-background .env-threshold .shaft {
+	position: absolute;
+	left: 50%;
+	top: -4%;
+	width: 74%;
+	height: 74%;
+	transform: translateX(-50%);
+	background: linear-gradient(180deg, rgba(226, 240, 222, 0.3) 0%, rgba(204, 226, 202, 0.12) 42%, transparent 88%);
+	filter: blur(26px);
+	mix-blend-mode: screen;
+	opacity: 0.85;
+}
+
+.access-background .env-threshold .haze {
+	position: absolute;
+	left: 50%;
+	top: 10%;
+	width: 128%;
+	height: 58%;
+	transform: translateX(-50%);
+	background: radial-gradient(60% 52% at 50% 34%, rgba(214, 232, 212, 0.16), transparent 72%);
+	filter: blur(38px);
+	mix-blend-mode: screen;
+}
+
+.access-background .env-threshold .depth {
+	position: absolute;
+	left: 50%;
+	top: 30%;
+	width: 88%;
+	height: 40%;
+	transform: translateX(-50%);
+	background: linear-gradient(180deg, rgba(150, 178, 150, 0.1), rgba(6, 9, 7, 0.34));
+	filter: blur(18px);
+}
+
+/* Light landing on the floor, directly under the opening. */
+.access-background .env-floor {
+	top: auto;
+	height: 30%;
+	background:
+		radial-gradient(46% 120% at 50% 0%, rgba(198, 222, 196, 0.16), transparent 72%),
+		linear-gradient(180deg, transparent 0%, rgba(5, 8, 6, 0.42) 62%, rgba(4, 6, 5, 0.78) 100%);
+}
+
+.access-background .env-floor-sheen {
+	top: auto;
+	height: 24%;
+	background: radial-gradient(40% 90% at 50% 10%, rgba(200, 255, 61, 0.05), transparent 70%);
+	mix-blend-mode: screen;
+}
+
+.access-vignette {
+	background:
+		radial-gradient(130% 100% at 50% 44%, transparent 38%, rgba(4, 6, 5, 0.58) 82%, rgba(3, 5, 4, 0.9) 100%);
+}
+
+/* Technical survey grid. Aligned to the stage, not graph paper. */
+.access-grid {
+	opacity: 0.055;
+	background-image:
+		linear-gradient(90deg, rgba(243, 241, 233, 0.9) 1px, transparent 1px),
+		linear-gradient(180deg, rgba(243, 241, 233, 0.55) 1px, transparent 1px);
+	background-size: 12.5vw 12.5vh;
+	background-position: center;
+	-webkit-mask-image: radial-gradient(120% 90% at 50% 46%, #000 30%, transparent 86%);
+	mask-image: radial-gradient(120% 90% at 50% 46%, #000 30%, transparent 86%);
+}
+
+.access-grain {
+	opacity: 0.035;
+	background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/></filter><rect width='160' height='160' filter='url(%23n)' opacity='0.5'/></svg>");
+	background-size: 160px 160px;
+}
+
+/* ===================================================================== BRAND */
+
+.access-brand {
+	position: absolute;
+	z-index: 4;
+	top: clamp(26px, 3.6vh, 38px);
+	left: var(--gutter);
+	display: flex;
+	align-items: flex-start;
+	gap: 14px;
+}
+
+.access-brand .mark {
+	display: block;
+	width: 13px;
+	height: 13px;
+	margin-top: 9px;
+	background: var(--lime);
+	transform: rotate(45deg);
+}
+
+.access-brand .wordmark {
+	display: block;
+	font-family: var(--display);
+	font-size: clamp(26px, 2.2vw, 33px);
+	line-height: 0.94;
+	letter-spacing: 0.1em;
+	color: var(--bone);
+	text-transform: uppercase;
+}
+
+.access-brand .descriptor {
+	display: block;
+	margin-top: 7px;
+	font-family: var(--mono);
+	font-size: 9.5px;
+	line-height: 1.7;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+
+.access-status {
+	position: absolute;
+	z-index: 4;
+	top: clamp(28px, 3.8vh, 40px);
+	right: var(--gutter);
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
+	padding: 9px 15px;
+	border: 1px solid rgba(243, 241, 233, 0.14);
+	background: rgba(7, 9, 8, 0.52);
+	backdrop-filter: blur(6px);
+	font-family: var(--mono);
+	font-size: 9.5px;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+	color: rgba(243, 241, 233, 0.72);
+}
+
+.access-status i {
+	width: 6px;
+	height: 6px;
+	border-radius: 50%;
+	background: var(--lime);
+	box-shadow: 0 0 0 3px rgba(200, 255, 61, 0.12);
+}
+
+/* Editorial marks painted on the architecture itself. */
+.access-wallmark {
+	position: absolute;
+	z-index: 3;
+	font-family: var(--mono);
+	font-size: 9px;
+	line-height: 1.95;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: rgba(243, 241, 233, 0.26);
+	pointer-events: none;
+}
+
+.access-wallmark.is-left {
+	left: clamp(8px, 1.3vw, 22px);
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.access-wallmark.is-right {
+	right: clamp(8px, 1.3vw, 22px);
+	top: 50%;
+	transform: translateY(-50%);
+	text-align: right;
+}
+
+@media (max-width: 1320px) {
+	.access-wallmark {
+		display: none;
+	}
+}
+
+/* ==================================================================== LAYOUT */
+
+.access-stage {
+	position: relative;
+	z-index: 2;
+	width: min(1560px, 94vw);
+	min-height: 100svh;
+	margin: 0 auto;
+	display: grid;
+	grid-template-columns: minmax(0, 1.12fr) minmax(470px, 0.74fr);
+	align-items: center;
+	column-gap: clamp(20px, 1.8vw, 36px);
+	padding-block: clamp(72px, 9vh, 104px) clamp(56px, 7vh, 82px);
+}
+
+/* ====================================================================== TYPE */
+
+/* Both halves are pulled inward off their outer margins so the composition
+   closes toward the architectural threshold instead of stranding a void in
+   the middle of the frame. */
+.access-copy {
+	position: relative;
+	max-width: 780px;
+	padding-left: clamp(18px, 4vw, 86px);
+	transform: translateY(-1.5vh);
+}
+
+.access-kicker {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	font-family: var(--mono);
+	font-size: 10.5px;
+	letter-spacing: 0.26em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+
+.access-kicker b {
+	color: var(--lime);
+	font-weight: 600;
+}
+
+.access-kicker s {
+	width: 34px;
+	height: 1px;
+	background: rgba(243, 241, 233, 0.25);
+	text-decoration: none;
+}
+
+/* Anton ships a single weight. Asking for 900 makes the browser synthesise a
+   bold, which fattens every glyph until the three lines collide. Weight stays
+   400, tracking stays near neutral, and the leading is set above 1 so each
+   line keeps its own air. */
+.access-heading {
+	margin: clamp(30px, 4.4vh, 46px) 0 0;
+	max-width: 740px;
+	font-family: var(--display);
+	font-weight: 400;
+	font-size: clamp(54px, 5.1vw, 98px);
+	line-height: 1.04;
+	letter-spacing: -0.005em;
+	word-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--bone);
+}
+
+.access-heading span {
+	display: block;
+}
+
+.access-heading span + span {
+	margin-top: 0.07em;
+}
+
+.access-heading .outline {
+	color: transparent;
+	-webkit-text-stroke: 1.5px var(--lime);
+	paint-order: stroke fill;
+	text-shadow: none;
+}
+
+.access-body {
+	margin: clamp(26px, 3.8vh, 40px) 0 0;
+	max-width: 600px;
+	font-size: clamp(14.5px, 1.05vw, 16.5px);
+	line-height: 1.62;
+	color: var(--body);
+}
+
+/* ================================================================ PRINCIPLES */
+
+.access-principles {
+	margin: clamp(30px, 4.4vh, 50px) 0 0;
+	padding: 0;
+	list-style: none;
+	max-width: 640px;
+	border-top: 1px solid var(--line-soft);
+}
+
+.access-principle {
+	display: flex;
+	align-items: center;
+	gap: 20px;
+	min-height: clamp(48px, 5.8vh, 60px);
+	border-bottom: 1px solid var(--line-soft);
+}
+
+.access-principle b {
+	flex: none;
+	width: 24px;
+	font-family: var(--mono);
+	font-size: 10px;
+	font-weight: 500;
+	letter-spacing: 0.14em;
+	color: var(--lime);
+}
+
+.access-principle i {
+	flex: none;
+	width: 22px;
+	height: 1px;
+	background: rgba(243, 241, 233, 0.2);
+}
+
+.access-principle span {
+	font-family: var(--mono);
+	font-size: 10.5px;
+	letter-spacing: 0.15em;
+	text-transform: uppercase;
+	line-height: 1.5;
+	color: rgba(243, 241, 233, 0.66);
+}
+
+/* =================================================================== CONSOLE */
+
+.access-console {
+	position: relative;
+	display: flex;
+	justify-content: flex-end;
+	padding-right: clamp(18px, 4vw, 86px);
+}
+
+.access-terminal {
+	position: relative;
+	width: clamp(470px, 34vw, 620px);
+	max-height: min(78vh, 720px);
+	display: flex;
+	flex-direction: column;
+	padding: clamp(16px, 2vh, 22px) clamp(18px, 1.6vw, 26px) clamp(12px, 1.5vh, 18px);
+	border: 1px solid var(--line);
+	border-left: 2px solid var(--lime);
+	border-radius: 3px;
+	background: rgba(7, 9, 8, 0.78);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	box-shadow:
+		0 30px 80px rgba(0, 0, 0, 0.45),
+		inset 0 1px 0 rgba(243, 241, 233, 0.05);
+}
+
+/* machined corner marks — the unit is set into the wall */
+.access-terminal::before,
+.access-terminal::after {
+	content: "";
+	position: absolute;
+	width: 12px;
+	height: 12px;
+	pointer-events: none;
+}
+.access-terminal::before {
+	top: -1px;
+	right: -1px;
+	border-top: 1px solid rgba(200, 255, 61, 0.5);
+	border-right: 1px solid rgba(200, 255, 61, 0.5);
+}
+.access-terminal::after {
+	bottom: -1px;
+	right: -1px;
+	border-bottom: 1px solid rgba(200, 255, 61, 0.5);
+	border-right: 1px solid rgba(200, 255, 61, 0.5);
+}
+
+.access-terminal-header {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 16px;
+	padding-bottom: clamp(12px, 1.6vh, 16px);
+	border-bottom: 1px solid var(--line);
+	font-family: var(--mono);
+	font-size: 11px;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+}
+
+.access-terminal-header .name {
+	color: var(--bone);
+}
+.access-terminal-header .name em {
+	font-style: normal;
+	color: var(--lime);
+}
+.access-terminal-header .mode {
+	font-size: 9px;
+	letter-spacing: 0.2em;
+	color: rgba(200, 255, 61, 0.62);
+}
+
+/* field scaffolding shared by workspace + persona */
+.field-label {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 12px;
+	margin-bottom: 9px;
+	font-family: var(--mono);
+	font-size: 9px;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+
+.field-label em {
+	font-style: normal;
+	font-size: 9px;
+	letter-spacing: 0.18em;
+	color: rgba(243, 241, 233, 0.4);
+}
+
+/* WORKSPACE ---------------------------------------------------------------- */
+
+.workspace-field {
+	margin-top: clamp(12px, 1.7vh, 17px);
+}
+
+.workspace-field .control {
+	position: relative;
+}
+
+.workspace-field select {
+	width: 100%;
+	height: clamp(42px, 5vh, 48px);
+	padding: 0 40px 0 16px;
+	appearance: none;
+	border: 1px solid var(--line);
+	border-left: 2px solid rgba(200, 255, 61, 0.42);
+	border-radius: 2px;
+	background: rgba(10, 13, 11, 0.78);
+	color: var(--bone);
+	font-family: var(--ui);
+	font-size: 13.5px;
+	letter-spacing: 0.01em;
+	cursor: pointer;
+	transition:
+		border-color 200ms var(--ease),
+		background 200ms var(--ease);
+}
+
+.workspace-field select:hover:not(:disabled) {
+	border-color: rgba(243, 241, 233, 0.3);
+}
+.workspace-field select:focus-visible {
+	outline: 2px solid var(--lime);
+	outline-offset: 2px;
+}
+.workspace-field select:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.workspace-field .chevron {
+	position: absolute;
+	right: 16px;
+	top: 50%;
+	width: 7px;
+	height: 7px;
+	margin-top: -5px;
+	border-right: 1px solid rgba(243, 241, 233, 0.5);
+	border-bottom: 1px solid rgba(243, 241, 233, 0.5);
+	transform: rotate(45deg);
+	pointer-events: none;
+}
+
+/* PERSONA REGISTER --------------------------------------------------------- */
+
+.persona-register {
+	margin-top: clamp(12px, 1.7vh, 17px);
+	min-height: 0;
+	display: flex;
+	flex-direction: column;
+}
+
+.persona-register .rows {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+	min-height: 0;
+	overflow: auto;
+	scrollbar-width: thin;
+}
+
+.persona-row {
+	display: grid;
+	grid-template-columns: 38px minmax(0, 1fr) auto;
+	align-items: center;
+	gap: 14px;
+	width: 100%;
+	min-height: clamp(44px, 5.1vh, 54px);
+	padding: 0 14px 0 12px;
+	text-align: left;
+	border: 1px solid var(--line-soft);
+	border-left: 3px solid transparent;
+	border-radius: 2px;
+	background: rgba(10, 12, 11, 0.7);
+	color: inherit;
+	font: inherit;
+	cursor: pointer;
+	transition:
+		transform 220ms var(--ease),
+		border-color 220ms var(--ease),
+		background 220ms var(--ease);
+}
+
+.persona-row:hover:not(:disabled) {
+	transform: translateX(4px);
+	border-color: rgba(243, 241, 233, 0.22);
+	border-left-color: rgba(200, 255, 61, 0.35);
+}
+.persona-row:hover:not(:disabled) .who strong {
+	color: var(--bone);
+}
+.persona-row:hover:not(:disabled) .code {
+	color: rgba(243, 241, 233, 0.7);
+}
+.persona-row:focus-visible {
+	outline: 2px solid var(--lime);
+	outline-offset: 2px;
+}
+.persona-row:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+
+.persona-row.is-selected {
+	background: rgba(200, 255, 61, 0.045);
+	border-color: rgba(200, 255, 61, 0.22);
+	border-left: 3px solid var(--lime);
+}
+
+.persona-row .initials {
+	display: grid;
+	place-items: center;
+	width: 34px;
+	height: 34px;
+	border: 1px solid rgba(243, 241, 233, 0.16);
+	border-radius: 2px;
+	background: rgba(243, 241, 233, 0.04);
+	font-family: var(--mono);
+	font-size: 11px;
+	letter-spacing: 0.08em;
+	color: rgba(243, 241, 233, 0.72);
+}
+
+.persona-row.is-selected .initials {
+	border-color: rgba(200, 255, 61, 0.42);
+	background: rgba(200, 255, 61, 0.08);
+	color: var(--lime);
+}
+
+.persona-row .who {
+	min-width: 0;
+	display: block;
+}
+
+.persona-row .who strong {
+	display: block;
+	font-family: var(--ui);
+	font-size: 13px;
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	color: rgba(243, 241, 233, 0.88);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.persona-row .who small {
+	display: block;
+	margin-top: 3px;
+	font-family: var(--mono);
+	font-size: 8.5px;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--muted);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.persona-row .code {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-family: var(--mono);
+	font-size: 8.5px;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: rgba(243, 241, 233, 0.42);
+	transition: color 220ms var(--ease);
+}
+
+.persona-row .code i {
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	background: rgba(243, 241, 233, 0.22);
+}
+
+.persona-row.is-selected .code {
+	color: var(--lime);
+}
+.persona-row.is-selected .code i {
+	background: var(--lime);
+}
+
+.persona-skeleton {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+.persona-skeleton li {
+	height: clamp(50px, 6.2vh, 60px);
+	border: 1px solid var(--line-soft);
+	border-radius: 2px;
+	background: linear-gradient(90deg, rgba(243, 241, 233, 0.03), rgba(243, 241, 233, 0.07), rgba(243, 241, 233, 0.03));
+	background-size: 220% 100%;
+	animation: access-shimmer 1.5s linear infinite;
+}
+
+@keyframes access-shimmer {
+	from {
+		background-position: 120% 0;
+	}
+	to {
+		background-position: -120% 0;
+	}
+}
+
+.persona-empty {
+	margin: 0;
+	padding: 18px 14px;
+	border: 1px dashed var(--line);
+	border-radius: 2px;
+	font-size: 12.5px;
+	line-height: 1.55;
+	color: var(--body);
+}
+
+/* IDENTITY SUMMARY --------------------------------------------------------- */
+
+.identity-summary {
+	margin-top: clamp(10px, 1.4vh, 15px);
+	padding: 11px 14px;
+	border: 1px solid rgba(200, 255, 61, 0.16);
+	border-left: 2px solid var(--lime);
+	border-radius: 2px;
+	background: rgba(200, 255, 61, 0.035);
+}
+
+.identity-summary .head {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-family: var(--mono);
+	font-size: 9px;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+	color: var(--lime);
+}
+
+.identity-summary .head i {
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	background: var(--lime);
+}
+
+.identity-summary dl {
+	margin: 10px 0 0;
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 8px 20px;
+}
+
+.identity-summary dl > div {
+	min-width: 0;
+}
+
+.identity-summary dt {
+	font-family: var(--mono);
+	font-size: 8px;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+	color: var(--muted);
+}
+
+.identity-summary dd {
+	margin: 3px 0 0;
+	font-size: 12.5px;
+	color: rgba(243, 241, 233, 0.88);
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.identity-summary dd.is-code {
+	font-family: var(--mono);
+	font-size: 11px;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--lime);
+}
+
+.access-alert {
+	margin-top: 12px;
+	padding: 11px 13px;
+	border: 1px solid rgba(255, 138, 118, 0.34);
+	border-left: 2px solid #ff8a76;
+	border-radius: 2px;
+	background: rgba(255, 138, 118, 0.07);
+	font-size: 12.5px;
+	line-height: 1.5;
+	color: #ffd7cf;
+}
+.access-alert b {
+	display: block;
+	margin-bottom: 2px;
+	font-family: var(--mono);
+	font-size: 9px;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+	color: #ff8a76;
+}
+
+/* ACTIONS ------------------------------------------------------------------ */
+
+.access-actions {
+	margin-top: clamp(10px, 1.4vh, 15px);
+	display: flex;
+	flex-direction: column;
+	gap: 9px;
+}
+
+.access-btn {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 12px;
+	width: 100%;
+	border: 1px solid transparent;
+	border-radius: 2px;
+	font-family: var(--mono);
+	font-size: 11px;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition:
+		transform 220ms var(--ease),
+		box-shadow 220ms var(--ease),
+		background 220ms var(--ease);
+}
+
+.access-btn.primary {
+	height: clamp(50px, 6vh, 58px);
+	background: var(--lime);
+	color: var(--ink);
+	font-weight: 700;
+	box-shadow: 5px 5px 0 var(--ink);
+}
+.access-btn.primary:hover:not(:disabled) {
+	transform: translateY(-3px);
+	box-shadow: 5px 8px 0 var(--ink);
+}
+.access-btn.primary:hover:not(:disabled) .arrow {
+	transform: translateX(5px);
+}
+.access-btn.primary:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+	box-shadow: 5px 5px 0 rgba(7, 9, 8, 0.6);
+}
+
+.access-btn .arrow {
+	transition: transform 220ms var(--ease);
+}
+
+.access-btn.secondary {
+	height: clamp(44px, 5.2vh, 50px);
+	border-color: rgba(243, 241, 233, 0.24);
+	background: rgba(10, 12, 11, 0.72);
+	color: rgba(243, 241, 233, 0.78);
+	box-shadow: 3px 3px 0 rgba(200, 255, 61, 0.14);
+}
+.access-btn.secondary:hover:not(:disabled) {
+	transform: translateY(-2px);
+	border-color: rgba(243, 241, 233, 0.42);
+	color: var(--bone);
+}
+.access-btn:focus-visible {
+	outline: 2px solid var(--lime);
+	outline-offset: 3px;
+}
+
+.access-notice {
+	margin: 10px 0 0;
+	font-family: var(--mono);
+	font-size: 9px;
+	line-height: 1.6;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: rgba(243, 241, 233, 0.34);
+}
+
+.access-terminal-foot {
+	margin-top: clamp(8px, 1.2vh, 13px);
+	padding-top: 10px;
+	border-top: 1px solid var(--line-soft);
+	font-family: var(--mono);
+	font-size: 8.5px;
+	line-height: 1.75;
+	letter-spacing: 0.17em;
+	text-transform: uppercase;
+	color: rgba(243, 241, 233, 0.3);
+}
+
+/* ==================================================================== FOOTER */
+
+.access-footer {
+	position: absolute;
+	z-index: 4;
+	left: var(--gutter);
+	right: var(--gutter);
+	bottom: clamp(18px, 2.6vh, 28px);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 18px;
+	font-family: var(--mono);
+	font-size: 8.5px;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: rgba(243, 241, 233, 0.3);
+	pointer-events: none;
+}
+
+/* ================================================================= ANIMATION */
+
+@keyframes access-rise {
+	from {
+		opacity: 0;
+		transform: translateY(18px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes access-slide-in {
+	from {
+		opacity: 0;
+		transform: translateX(40px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+@keyframes access-fade {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+.access-page .access-background {
+	animation: access-fade 1200ms var(--ease) both;
+}
+
+.access-brand,
+.access-status,
+.access-kicker,
+.access-heading span,
+.access-body,
+.access-principles,
+.access-footer,
+.access-wallmark {
+	animation: access-rise 760ms var(--ease) both;
+}
+
+.access-brand {
+	animation-delay: 150ms;
+}
+.access-status {
+	animation-delay: 300ms;
+}
+.access-kicker {
+	animation-delay: 400ms;
+}
+.access-heading span:nth-child(1) {
+	animation-delay: 550ms;
+}
+.access-heading span:nth-child(2) {
+	animation-delay: 700ms;
+}
+.access-heading span:nth-child(3) {
+	animation-delay: 850ms;
+}
+.access-body {
+	animation-delay: 1000ms;
+}
+.access-principles {
+	animation-delay: 1200ms;
+}
+.access-wallmark {
+	animation-delay: 1300ms;
+}
+.access-footer {
+	animation-delay: 1350ms;
+}
+
+.access-terminal {
+	animation: access-slide-in 900ms var(--ease) both;
+	animation-delay: 500ms;
+}
+.access-terminal > .workspace-field {
+	animation: access-rise 620ms var(--ease) both;
+	animation-delay: 800ms;
+}
+.access-terminal > .persona-register {
+	animation: access-rise 620ms var(--ease) both;
+	animation-delay: 900ms;
+}
+.access-terminal > .identity-summary {
+	animation: access-rise 620ms var(--ease) both;
+	animation-delay: 1100ms;
+}
+.access-terminal > .access-actions {
+	animation: access-rise 620ms var(--ease) both;
+	animation-delay: 1250ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.access-page *,
+	.access-page *::before,
+	.access-page *::after {
+		animation: none !important;
+		transition: none !important;
+	}
+	.access-page .env-photo {
+		transform: none;
+	}
+}
+
+/* ================================================================== RESPONSIVE */
+
+/* Tablet — keep the architectural composition, shrink its parts. */
+@media (max-width: 1180px) and (min-width: 861px) {
+	.access-stage {
+		width: min(1100px, 94vw);
+		grid-template-columns: minmax(0, 0.9fr) minmax(400px, 0.8fr);
+		column-gap: clamp(24px, 4vw, 56px);
+	}
+	.access-heading {
+		font-size: clamp(40px, 5vw, 62px);
+		max-width: 470px;
+	}
+	.access-terminal {
+		width: min(100%, 470px);
+	}
+	.access-body,
+	.access-principles {
+		max-width: 430px;
+	}
+}
+
+/* Mobile — stacked, but still standing inside the room. */
+@media (max-width: 860px) {
+	.access-page {
+		height: auto;
+		overflow: visible;
+	}
+	.access-background .env-photo {
+		background-image: url("/assets/nova/hero-architecture-mobile.webp");
+		background-position: 50% 42%;
+		background-attachment: scroll;
+	}
+	.access-background .env-mass {
+		background: linear-gradient(180deg, rgba(4, 6, 5, 0.72) 0%, rgba(4, 6, 5, 0.42) 46%, rgba(4, 6, 5, 0.86) 100%);
+	}
+	.access-brand,
+	.access-status {
+		position: static;
+	}
+	.access-footer {
+		position: static;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 8px;
+		margin-top: 34px;
+	}
+	.access-stage {
+		width: min(640px, 92vw);
+		min-height: 0;
+		grid-template-columns: minmax(0, 1fr);
+		row-gap: 40px;
+		padding-block: 28px 40px;
+	}
+	.access-mobile-head {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 16px;
+		margin-bottom: 42px;
+	}
+	.access-copy {
+		transform: none;
+		max-width: none;
+		padding-left: 0;
+	}
+	.access-heading {
+		font-size: clamp(42px, 11vw, 66px);
+		line-height: 1.05;
+		max-width: none;
+	}
+	.access-console {
+		justify-content: stretch;
+		padding-right: 0;
+	}
+	.access-terminal {
+		width: 100%;
+		max-height: none;
+	}
+	.persona-register .rows {
+		overflow: visible;
+	}
+}
+
+@media (min-width: 861px) {
+	.access-mobile-head {
+		display: none;
+	}
+}

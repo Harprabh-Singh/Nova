@@ -1,0 +1,620 @@
+/* ============================================================================
+   NOVA — THE GUARANTEE GRID
+
+   Quiet cards inside a loud environment. The architecture photograph from the
+   hero returns, graded much darker; the plaques are flat material with hairline
+   borders and hard offset shadows, mounted on a survey grid.
+
+   Nothing here is 3D. Depth is shadow offset, lift and value contrast.
+   ========================================================================== */
+
+.gtc {
+	--g-bg: #070908;
+	--g-bone: #f3f1e9;
+	--g-muted: rgba(243, 241, 233, 0.62);
+	--g-tech: rgba(243, 241, 233, 0.36);
+	--g-lime: #c8ff3d;
+	--g-cyan: #4fe3e3;
+	--g-pink: #ff2387;
+	--g-line: rgba(243, 241, 233, 0.14);
+	--g-ink: #080909;
+	--g-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+	--g-display: "Anton", "Archivo Black", Impact, "Arial Narrow", sans-serif;
+	--g-ui: "Inter", system-ui, -apple-system, sans-serif;
+	--g-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+	position: relative;
+	isolation: isolate;
+	background: var(--g-bg);
+	color: var(--g-bone);
+	padding: clamp(88px, 12vh, 150px) 0 clamp(72px, 10vh, 120px);
+	overflow: hidden;
+}
+
+/* ------------------------------------------------------------- the room */
+
+.gtc-env {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+}
+.gtc-env > * {
+	position: absolute;
+	inset: 0;
+}
+
+/* Same architecture asset as the hero, pushed much further into shadow so
+   the plaques stay the strongest objects on the wall. */
+.gtc-env-image {
+	background: url("/assets/nova/hero-architecture.webp") center 38% / cover no-repeat;
+	filter: grayscale(0.34) brightness(0.3) contrast(1.08);
+	opacity: 0.5;
+}
+
+/* Soft black gradient: the top of the section stays dark so the previous
+   section can hand over without a hard cut, and light gathers mid-wall. */
+.gtc-env-grade {
+	background:
+		linear-gradient(180deg, #070908 0%, rgba(7, 9, 8, 0.94) 16%, rgba(7, 9, 8, 0.72) 46%, rgba(7, 9, 8, 0.92) 84%, #070908 100%),
+		radial-gradient(120% 70% at 50% 42%, rgba(200, 255, 61, 0.05), transparent 62%);
+}
+
+/* Vertical structure: concrete bays reading as columns behind the grid. */
+.gtc-env-columns {
+	background-image: repeating-linear-gradient(
+		90deg,
+		transparent 0 calc(100% / 6 - 1px),
+		rgba(243, 241, 233, 0.05) calc(100% / 6 - 1px) calc(100% / 6)
+	);
+	mask-image: linear-gradient(180deg, transparent, #000 22%, #000 72%, transparent);
+	opacity: 0.7;
+}
+
+/* Survey grid, aligned to the same 120px module as the hero. */
+.gtc-env-grid {
+	background-image:
+		linear-gradient(90deg, rgba(243, 241, 233, 0.045) 1px, transparent 1px),
+		linear-gradient(180deg, rgba(243, 241, 233, 0.045) 1px, transparent 1px);
+	background-size: 120px 120px;
+	mask-image: radial-gradient(90% 70% at 50% 45%, #000 20%, transparent 78%);
+	opacity: 0.6;
+}
+
+/* Reflective floor at the base of the wall. */
+.gtc-env-floor {
+	top: auto;
+	height: 34%;
+	background: linear-gradient(180deg, transparent, rgba(243, 241, 233, 0.035) 60%, rgba(7, 9, 8, 0.9));
+}
+
+.gtc-env-vignette {
+	background: radial-gradient(118% 84% at 50% 46%, transparent 42%, rgba(4, 5, 5, 0.86) 100%);
+}
+
+/* The same grain as every other NOVA section. */
+.gtc-env-grain {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+	opacity: 0.035;
+	mix-blend-mode: overlay;
+}
+
+.gtc-inner {
+	position: relative;
+	z-index: 1;
+	width: min(1500px, 92vw);
+	margin: 0 auto;
+}
+
+/* ------------------------------------------------------------- masthead */
+
+.gtc-head {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+	grid-template-areas:
+		"kicker aside"
+		"title  aside"
+		"rule   rule";
+	align-items: end;
+	column-gap: clamp(24px, 4vw, 72px);
+}
+
+.gtc-kicker {
+	grid-area: kicker;
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	font-family: var(--g-mono);
+	font-size: 10px;
+	letter-spacing: 0.3em;
+	text-transform: uppercase;
+	color: var(--g-tech);
+}
+.gtc-kicker::before {
+	content: "";
+	width: 34px;
+	height: 1px;
+	background: var(--g-lime);
+	opacity: 0.8;
+}
+
+.gtc-title {
+	grid-area: title;
+	margin: clamp(14px, 2vh, 24px) 0 0;
+	font-family: var(--g-display);
+	font-weight: 400;
+	/* Sized against the longer line so the display type never clips. */
+	font-size: clamp(44px, 6.4vw, 118px);
+	line-height: 0.9;
+	letter-spacing: -0.015em;
+	text-transform: uppercase;
+	max-width: 100%;
+	overflow-wrap: break-word;
+}
+.gtc-title .solid,
+.gtc-title .outline {
+	display: block;
+}
+.gtc-title .solid {
+	color: var(--g-bone);
+}
+.gtc-title .outline {
+	color: transparent;
+	-webkit-text-stroke: 1px var(--g-lime);
+	text-stroke: 1px var(--g-lime);
+}
+
+.gtc-head-aside {
+	grid-area: aside;
+	padding-bottom: 8px;
+}
+.gtc-lede {
+	margin: 0;
+	font-family: var(--g-ui);
+	font-size: 13px;
+	line-height: 1.6;
+	color: var(--g-muted);
+	max-width: 34ch;
+}
+.gtc-tally {
+	margin: 14px 0 0;
+	font-family: var(--g-mono);
+	font-size: 10px;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: var(--g-tech);
+}
+.gtc-tally b {
+	font-weight: 500;
+	color: var(--g-bone);
+}
+.gtc-tally span {
+	color: var(--g-lime);
+}
+
+.gtc-head-rule {
+	grid-area: rule;
+	height: 1px;
+	margin-top: clamp(28px, 4vh, 48px);
+	background: linear-gradient(90deg, var(--g-line), rgba(243, 241, 233, 0.03));
+}
+
+/* ----------------------------------------------------------- the wall */
+
+.gtc-grid {
+	margin-top: clamp(34px, 5vh, 62px);
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: clamp(12px, 1.1vw, 18px);
+	align-items: start;
+}
+
+.gtc-card {
+	position: relative;
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+	gap: clamp(16px, 1.6vw, 24px);
+	min-height: clamp(240px, 26vw, 300px);
+	padding: clamp(20px, 1.7vw, 28px);
+	transform: translateY(var(--off, 0px));
+	border-radius: 2px;
+	border: 1px solid rgba(243, 241, 233, 0.2);
+	background: rgba(10, 12, 11, 0.86);
+	box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.85);
+	transition:
+		transform 420ms var(--g-ease),
+		box-shadow 420ms var(--g-ease),
+		border-color 420ms var(--g-ease),
+		opacity 420ms var(--g-ease),
+		background-color 420ms var(--g-ease);
+	outline: none;
+}
+
+/* Materials. Three only, used sparingly. */
+.gtc-card[data-theme="graphite"] {
+	background: rgba(18, 21, 20, 0.9);
+}
+.gtc-card[data-theme="editorial"] {
+	background: var(--g-bone);
+	border-color: rgba(10, 12, 11, 0.75);
+	color: var(--g-ink);
+}
+
+/* A soft green wash sits behind 01 and 06 only — a small hierarchy, not a glow. */
+.gtc-card.is-lit::before {
+	content: "";
+	position: absolute;
+	inset: -30% -18%;
+	z-index: -1;
+	background: radial-gradient(60% 60% at 50% 50%, rgba(200, 255, 61, 0.07), transparent 70%);
+	pointer-events: none;
+}
+
+/* Accent: one short vertical rule on the leading edge. */
+.gtc-card-edge {
+	position: absolute;
+	left: -1px;
+	top: clamp(20px, 1.7vw, 28px);
+	width: 2px;
+	height: 28px;
+	background: var(--g-bone);
+	opacity: 0.55;
+	transition:
+		height 420ms var(--g-ease),
+		opacity 420ms var(--g-ease);
+}
+.gtc-card[data-accent="lime"] .gtc-card-edge {
+	background: var(--g-lime);
+}
+.gtc-card[data-accent="cyan"] .gtc-card-edge {
+	background: var(--g-cyan);
+}
+.gtc-card[data-accent="pink"] .gtc-card-edge {
+	background: var(--g-pink);
+}
+.gtc-card[data-theme="editorial"] .gtc-card-edge {
+	background: var(--g-ink);
+	opacity: 0.7;
+}
+
+.gtc-card-head {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 16px;
+}
+
+/* Small square icon container — never a pill. */
+.gtc-icon {
+	display: grid;
+	place-items: center;
+	width: 38px;
+	height: 38px;
+	border: 1px solid rgba(243, 241, 233, 0.16);
+	background: rgba(243, 241, 233, 0.04);
+	color: var(--g-muted);
+	transition:
+		color 420ms var(--g-ease),
+		border-color 420ms var(--g-ease),
+		background-color 420ms var(--g-ease);
+}
+.gtc-icon svg {
+	width: 18px;
+	height: 18px;
+}
+.gtc-card[data-accent="lime"] .gtc-icon {
+	color: var(--g-lime);
+}
+.gtc-card[data-accent="cyan"] .gtc-icon {
+	color: var(--g-cyan);
+}
+.gtc-card[data-accent="pink"] .gtc-icon {
+	color: var(--g-pink);
+}
+.gtc-card[data-theme="editorial"] .gtc-icon {
+	border-color: rgba(10, 12, 11, 0.3);
+	background: rgba(10, 12, 11, 0.05);
+	color: rgba(10, 12, 11, 0.74);
+}
+
+/* Editorial chapter numbering, upper right. */
+.gtc-card-no {
+	font-family: var(--g-display);
+	font-size: clamp(28px, 2.4vw, 40px);
+	font-weight: 400;
+	line-height: 1;
+	letter-spacing: 0.01em;
+	color: transparent;
+	-webkit-text-stroke: 1px rgba(243, 241, 233, 0.5);
+	text-stroke: 1px rgba(243, 241, 233, 0.5);
+	opacity: 0.35;
+	transition: opacity 420ms var(--g-ease);
+}
+.gtc-card[data-theme="editorial"] .gtc-card-no {
+	-webkit-text-stroke-color: rgba(10, 12, 11, 0.55);
+	text-stroke: 1px rgba(10, 12, 11, 0.55);
+	opacity: 0.4;
+}
+
+.gtc-card-body {
+	align-self: start;
+}
+.gtc-card-title {
+	margin: 0 0 10px;
+	font-family: var(--g-display);
+	font-weight: 400;
+	font-size: clamp(20px, 1.5vw, 27px);
+	line-height: 1.04;
+	letter-spacing: 0.005em;
+	text-transform: uppercase;
+	color: inherit;
+}
+.gtc-card-copy {
+	margin: 0;
+	max-width: 450px;
+	font-family: var(--g-ui);
+	font-size: 14px;
+	line-height: 1.5;
+	color: var(--g-muted);
+	transition: color 420ms var(--g-ease);
+}
+.gtc-card[data-theme="editorial"] .gtc-card-copy {
+	color: rgba(10, 12, 11, 0.68);
+}
+
+.gtc-card-meta {
+	padding-top: 16px;
+	border-top: 1px solid rgba(243, 241, 233, 0.12);
+	font-family: var(--g-mono);
+	font-size: 10px;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--g-tech);
+	transition: color 420ms var(--g-ease);
+}
+.gtc-card[data-theme="editorial"] .gtc-card-meta {
+	border-top-color: rgba(10, 12, 11, 0.18);
+	color: rgba(10, 12, 11, 0.55);
+}
+
+/* ------------------------------------------------------------- hover */
+
+/* A heavy printed panel lifting away from the wall: it moves, the shadow
+   lengthens beneath it, and nothing inside the card shifts. */
+@media (hover: hover) {
+	.gtc-grid:hover .gtc-card {
+		opacity: 0.86;
+	}
+	.gtc-grid:hover .gtc-card:hover {
+		opacity: 1;
+	}
+}
+
+.gtc-card:hover,
+.gtc-card:focus-visible {
+	transform: translateY(calc(var(--off, 0px) - 8px));
+	box-shadow: 8px 11px 0 rgba(0, 0, 0, 0.9);
+	border-color: rgba(243, 241, 233, 0.34);
+}
+.gtc-card[data-theme="editorial"]:hover,
+.gtc-card[data-theme="editorial"]:focus-visible {
+	border-color: rgba(10, 12, 11, 0.9);
+}
+.gtc-card:hover .gtc-card-edge,
+.gtc-card:focus-visible .gtc-card-edge {
+	height: 40px;
+	opacity: 1;
+}
+.gtc-card:hover .gtc-card-no,
+.gtc-card:focus-visible .gtc-card-no {
+	opacity: 0.62;
+}
+.gtc-card:hover .gtc-icon,
+.gtc-card:focus-visible .gtc-icon {
+	border-color: rgba(243, 241, 233, 0.3);
+	background: rgba(243, 241, 233, 0.07);
+}
+.gtc-card[data-theme="editorial"]:hover .gtc-icon {
+	border-color: rgba(10, 12, 11, 0.5);
+}
+.gtc-card:hover .gtc-card-meta,
+.gtc-card:focus-visible .gtc-card-meta {
+	color: rgba(243, 241, 233, 0.56);
+}
+.gtc-card[data-theme="editorial"]:hover .gtc-card-meta {
+	color: rgba(10, 12, 11, 0.72);
+}
+
+.gtc-card:focus-visible {
+	outline: 2px solid var(--g-lime);
+	outline-offset: 4px;
+}
+
+/* Touch: no hover states, a shorter press lift instead. */
+@media (hover: none) {
+	.gtc-card:active {
+		transform: translateY(calc(var(--off, 0px) - 4px));
+	}
+}
+
+/* --------------------------------------------------- closing statement */
+
+.gtc-foot {
+	margin-top: clamp(28px, 4vh, 52px);
+}
+
+.gtc-foot-strip {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: clamp(20px, 4vw, 60px);
+	flex-wrap: wrap;
+	padding: clamp(22px, 2.4vw, 34px) clamp(22px, 2.4vw, 36px);
+	border-radius: 2px;
+	border: 1px solid rgba(243, 241, 233, 0.2);
+	background: rgba(10, 12, 11, 0.9);
+	box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.85);
+}
+
+.gtc-foot-copy {
+	margin: 0;
+	max-width: 30ch;
+	font-family: var(--g-display);
+	font-weight: 400;
+	font-size: clamp(19px, 1.8vw, 30px);
+	line-height: 1.12;
+	letter-spacing: 0.005em;
+	text-transform: uppercase;
+	color: var(--g-bone);
+}
+.gtc-foot-copy span {
+	color: var(--g-lime);
+}
+
+.gtc-foot-cta {
+	flex: none;
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	padding: 13px 22px;
+	border: none;
+	border-radius: 2px;
+	background: var(--g-lime);
+	color: var(--g-ink);
+	font-family: var(--g-mono);
+	font-size: 11px;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	cursor: pointer;
+	box-shadow: 4px 5px 0 rgba(0, 0, 0, 0.85);
+	transition:
+		transform 320ms var(--g-ease),
+		box-shadow 320ms var(--g-ease);
+}
+.gtc-foot-cta:hover,
+.gtc-foot-cta:focus-visible {
+	transform: translateY(-3px);
+	box-shadow: 4px 8px 0 rgba(0, 0, 0, 0.9);
+}
+.gtc-foot-cta:focus-visible {
+	outline: 2px solid var(--g-bone);
+	outline-offset: 3px;
+}
+
+.gtc-foot-meta {
+	margin-top: clamp(18px, 2.4vh, 28px);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 20px;
+	flex-wrap: wrap;
+	font-family: var(--g-mono);
+	font-size: 9px;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+	color: rgba(243, 241, 233, 0.26);
+}
+
+/* ----------------------------------------------------------- entrance */
+
+@media (prefers-reduced-motion: no-preference) {
+	.gtc-card {
+		animation: gtc-rise 620ms var(--g-ease) backwards;
+		animation-delay: calc(var(--i, 0) * 70ms);
+	}
+	@keyframes gtc-rise {
+		from {
+			opacity: 0;
+			transform: translateY(calc(var(--off, 0px) + 20px));
+		}
+		to {
+			opacity: 1;
+			transform: translateY(var(--off, 0px));
+		}
+	}
+}
+
+/* -------------------------------------------------------- responsive */
+
+@media (max-width: 1100px) {
+	.gtc-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+	.gtc-head {
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-areas:
+			"kicker"
+			"title"
+			"aside"
+			"rule";
+		align-items: start;
+	}
+	.gtc-head-aside {
+		margin-top: clamp(20px, 3vh, 30px);
+		padding-bottom: 0;
+	}
+	.gtc-lede {
+		max-width: 52ch;
+	}
+}
+
+@media (max-width: 720px) {
+	.gtc {
+		padding: clamp(64px, 9vh, 96px) 0 clamp(56px, 8vh, 84px);
+	}
+	.gtc-inner {
+		width: 90vw;
+	}
+	.gtc-title {
+		font-size: clamp(38px, 11vw, 62px);
+	}
+	.gtc-grid {
+		grid-template-columns: minmax(0, 1fr);
+		gap: 14px;
+	}
+	.gtc-card {
+		min-height: 0;
+		/* Offsets are an editorial device for the wall; a single column
+		   reads better perfectly stacked. */
+		--off: 0px;
+	}
+	.gtc-card-copy {
+		font-size: 14px;
+	}
+	.gtc-foot-strip {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+	.gtc-foot-meta {
+		font-size: 8px;
+		letter-spacing: 0.18em;
+	}
+}
+
+/* ---------------------------------------------------- reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+	.gtc-card,
+	.gtc-card-edge,
+	.gtc-card-no,
+	.gtc-icon,
+	.gtc-foot-cta {
+		transition: none;
+		animation: none;
+	}
+	.gtc-card:hover,
+	.gtc-card:focus-visible,
+	.gtc-foot-cta:hover,
+	.gtc-foot-cta:focus-visible {
+		transform: translateY(var(--off, 0px));
+	}
+	.gtc-foot-cta:hover,
+	.gtc-foot-cta:focus-visible {
+		transform: none;
+	}
+	@media (hover: hover) {
+		.gtc-grid:hover .gtc-card {
+			opacity: 1;
+		}
+	}
+}

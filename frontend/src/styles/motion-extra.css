@@ -1,0 +1,75 @@
+/* ==========================================================================
+   NOVA — shared motion extensions
+   Companion to anim.css for the primitives in lib/motion.tsx. Keyframe names
+   are prefixed `mo-` so they never collide with the `an-` set.
+   ========================================================================== */
+
+/* Staggered mount entrance — used by stagger(index). */
+.mo-in {
+	animation: mo-in 0.68s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes mo-in {
+	from { opacity: 0; transform: translate3d(0, 14px, 0); }
+	to { opacity: 1; transform: translate3d(0, 0, 0); }
+}
+
+/* Clipped line reveal — heavier, more editorial than an-rise. */
+.mo-mask {
+	animation: mo-mask 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes mo-mask {
+	from { opacity: 0; transform: translate3d(0, 100%, 0) skewY(2.5deg); }
+	to { opacity: 1; transform: translate3d(0, 0, 0) skewY(0deg); }
+}
+
+/* Magnetic lean — reads the vars written by useMagnet. */
+.mo-magnet {
+	--mx: 0px;
+	--my: 0px;
+	transform: translate3d(var(--mx), var(--my), 0);
+	transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+		background 0.24s linear, color 0.24s linear, border-color 0.24s linear;
+}
+
+/* Cursor spotlight surface — reads the vars written by useSpotlight. */
+.mo-spot {
+	--sx: 0.5;
+	--sy: 0.3;
+}
+.mo-spot::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	background: radial-gradient(
+		34% 30% at calc(var(--sx) * 100%) calc(var(--sy) * 100%),
+		rgba(201, 242, 77, 0.1),
+		transparent 70%
+	);
+}
+
+/* Scanning hairline — for indexing / thinking states. */
+@keyframes mo-scan {
+	0% { transform: translate3d(-100%, 0, 0); }
+	100% { transform: translate3d(220%, 0, 0); }
+}
+
+/* Blinking terminal caret. */
+@keyframes mo-blink {
+	0%, 48% { opacity: 1; }
+	49%, 100% { opacity: 0; }
+}
+
+/* Slow drift for ambient marks. */
+@keyframes mo-drift {
+	0%, 100% { transform: translate3d(0, 0, 0); }
+	50% { transform: translate3d(0, -6px, 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.mo-in,
+	.mo-mask { animation: none; opacity: 1; transform: none; }
+	.mo-magnet { transition: none; transform: none; }
+	.mo-spot::before { display: none; }
+}

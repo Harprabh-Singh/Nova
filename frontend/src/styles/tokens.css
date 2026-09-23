@@ -1,0 +1,192 @@
+/* ==========================================================================
+   NOVA - CANONICAL DESIGN TOKENS
+
+   One source of truth for every visual decision in the product.
+
+   These values were EXTRACTED FROM THE EXISTING LANDING PAGE (landing.css,
+   hero.css), which is the approved visual foundation. Nothing here was
+   invented to "modernise" the look: the landing page defines the language,
+   and Access, Console, Knowledge, Settings and Admin inherit it.
+
+   Contributor rule: components consume --nova-* tokens. If a component needs
+   a colour, step, font or duration that is not here, add it here first. Do
+   not introduce near-duplicate hexes for the same semantic role.
+   ========================================================================== */
+
+:root {
+	/* ---------------------------------------------------------- surfaces */
+	--nova-bg: #06070b;              /* landing --ink */
+	--nova-bg-sunken: #040508;
+	--nova-bg-elevated: #0b0d13;     /* landing --ink-2 */
+	--nova-bg-plane: #0f1218;        /* landing --panel */
+	--nova-bg-raised: #14171e;
+
+	/* -------------------------------------------------------- foreground */
+	--nova-fg: #edeee9;              /* landing --text */
+	--nova-fg-bone: #f2f0e9;         /* landing --bone, inverted slabs */
+	--nova-fg-muted: rgba(237, 238, 233, 0.62);
+	--nova-fg-faint: rgba(237, 238, 233, 0.38);
+	--nova-fg-inverse: #06070b;
+
+	/* ------------------------------------------------------------ accent */
+	/* Lime is the only colour meaning system / active / authorised. */
+	--nova-accent: #c9f24d;          /* landing --acid */
+	--nova-accent-soft: rgba(201, 242, 77, 0.16);
+	--nova-accent-line: rgba(201, 242, 77, 0.4);
+	--nova-signal-cyan: #4fe3e3;
+	--nova-signal-magenta: #ff3d8a;
+	--nova-signal-violet: #8b5cff;
+	--nova-warn: #ffc24b;
+	--nova-danger: #ff5d73;
+	--nova-success: #7fe08a;
+
+	/* ------------------------------------------------------------- lines */
+	--nova-border: rgba(255, 255, 255, 0.1);
+	--nova-border-strong: rgba(255, 255, 255, 0.2);
+	--nova-border-soft: rgba(255, 255, 255, 0.06);
+	--nova-grid: rgba(255, 255, 255, 0.055);
+
+	/* -------------------------------------------------------- typography */
+	/* Haettenschweiler stays in the stack so that collapsing the landing and
+	   onboarding copies of this list onto the canonical token cannot change
+	   which fallback face those pages resolve to. */
+	--nova-font-display: "Archivo Black", "Anton", Impact, "Haettenschweiler", "Arial Black", sans-serif;
+	--nova-font-body: "Inter", system-ui, -apple-system, "Segoe UI", Arial, sans-serif;
+	--nova-font-mono: "IBM Plex Mono", "Courier New", ui-monospace, Menlo, Consolas, monospace;
+
+	--nova-display-1: clamp(38px, 6vw, 92px);
+	--nova-display-2: clamp(34px, 5.6vw, 84px);
+	--nova-display-3: clamp(26px, 3.2vw, 46px);
+	--nova-display-tracking: -0.03em;
+	--nova-display-leading: 0.92;
+
+	--nova-text-body: 14.5px;
+	--nova-text-lede: 13.5px;
+	--nova-text-label: 11px;
+	--nova-text-micro: 10.5px;
+	--nova-body-leading: 1.6;
+	--nova-lede-leading: 1.85;
+	--nova-label-tracking: 0.3em;
+	--nova-mono-tracking: 0.18em;
+
+	/* ------------------------------------------------------------ spacing */
+	--nova-space-1: 4px;
+	--nova-space-2: 8px;
+	--nova-space-3: 12px;
+	--nova-space-4: 16px;
+	--nova-space-5: 22px;
+	--nova-space-6: 32px;
+	--nova-space-7: 48px;
+	--nova-space-8: 72px;
+	--nova-space-section: clamp(78px, 9vw, 148px);
+
+	/* --------------------------------------------------------------- grid */
+	--nova-gutter: clamp(20px, 5vw, 84px);
+	--nova-measure: 620px;
+	--nova-content-max: 1560px;
+	--nova-rail-width: 274px; /* console rail width when revealed */
+
+	/* ------------------------------------------------------------- radius */
+	--nova-radius-0: 0px;
+	--nova-radius-1: 2px;
+	--nova-radius-2: 4px;
+
+	/* ------------------------------------------------------------- motion */
+	--nova-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+	--nova-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+	--nova-transition-fast: 140ms;
+	--nova-transition-medium: 320ms;
+	--nova-transition-slow: 640ms;
+	--nova-transition-enter: 900ms;
+
+	/* ------------------------------------------------------------ z-index */
+	--nova-z-plane: 2;
+	--nova-z-rail: 4;
+	--nova-z-overlay: 20;
+	--nova-z-modal: 40;
+
+	/* Breakpoints (documented; CSS cannot use vars in media queries):
+	   mobile <= 640px, tablet <= 1024px, laptop <= 1440px, desktop > 1440px */
+}
+
+@media (prefers-reduced-motion: reduce) {
+	:root {
+		--nova-transition-fast: 1ms;
+		--nova-transition-medium: 1ms;
+		--nova-transition-slow: 1ms;
+		--nova-transition-enter: 1ms;
+	}
+}
+
+/* ==========================================================================
+   SHARED SYSTEM PRIMITIVES
+   The metadata vocabulary every surface uses. Defined once so GROUNDING
+   looks identical in the console, in admin and on a knowledge document.
+   ========================================================================== */
+
+.nova-label {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--nova-space-2);
+	font-family: var(--nova-font-mono);
+	font-size: var(--nova-text-micro);
+	font-weight: 600;
+	letter-spacing: var(--nova-label-tracking);
+	text-transform: uppercase;
+	color: var(--nova-fg-faint);
+}
+.nova-label.is-accent { color: var(--nova-accent); }
+
+.nova-meta {
+	display: grid;
+	grid-template-columns: minmax(96px, 132px) 1fr;
+	gap: var(--nova-space-2) var(--nova-space-4);
+	font-family: var(--nova-font-mono);
+	font-size: var(--nova-text-label);
+	line-height: 1.7;
+	margin: 0;
+}
+.nova-meta dt {
+	margin: 0;
+	letter-spacing: var(--nova-mono-tracking);
+	text-transform: uppercase;
+	color: var(--nova-fg-faint);
+}
+.nova-meta dd { margin: 0; color: var(--nova-fg); }
+
+.nova-status {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--nova-space-2);
+	padding: 3px 8px;
+	border: 1px solid var(--nova-border);
+	border-radius: var(--nova-radius-0);
+	font-family: var(--nova-font-mono);
+	font-size: var(--nova-text-micro);
+	letter-spacing: var(--nova-mono-tracking);
+	text-transform: uppercase;
+	color: var(--nova-fg-muted);
+}
+.nova-status::before { content: ""; width: 5px; height: 5px; background: currentColor; }
+.nova-status.is-ok { color: var(--nova-accent); border-color: var(--nova-accent-line); }
+.nova-status.is-warn { color: var(--nova-warn); }
+.nova-status.is-deny { color: var(--nova-danger); }
+.nova-status.is-sim { color: var(--nova-signal-cyan); }
+
+.nova-trace {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--nova-space-2) var(--nova-space-4);
+	padding: var(--nova-space-2) 0;
+	border-top: 1px solid var(--nova-border-soft);
+	border-bottom: 1px solid var(--nova-border-soft);
+	font-family: var(--nova-font-mono);
+	font-size: var(--nova-text-micro);
+	letter-spacing: var(--nova-mono-tracking);
+	text-transform: uppercase;
+	color: var(--nova-fg-faint);
+}
+.nova-trace-step { display: inline-flex; align-items: center; gap: 6px; }
+.nova-trace-step i { width: 4px; height: 4px; background: var(--nova-accent); font-style: normal; }
+.nova-trace-step.is-muted i { background: var(--nova-fg-faint); }

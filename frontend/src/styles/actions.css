@@ -1,0 +1,175 @@
+/* Phase 8 - governed enterprise actions. Reuses the console's ink-and-bone
+   language; nothing here introduces a new colour system. */
+
+.act-toggle {
+	align-self: flex-start;
+}
+
+.act-panel {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	padding: 18px;
+	margin-bottom: 10px;
+}
+
+.act-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+
+.act-head > div:first-child {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.act-head-buttons {
+	display: flex;
+	gap: 8px;
+}
+
+.wx-chip.is-sim {
+	letter-spacing: 0.08em;
+}
+
+.act-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: 10px;
+}
+
+.act-card {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	width: 100%;
+	text-align: left;
+	padding: 12px 14px;
+	border: 1px solid currentColor;
+	border-radius: 10px;
+	background: transparent;
+	color: inherit;
+	cursor: pointer;
+	font: inherit;
+}
+
+.act-card:disabled {
+	opacity: 0.45;
+	cursor: not-allowed;
+}
+
+.act-card span {
+	font-size: 0.86rem;
+	opacity: 0.8;
+}
+
+.act-card em {
+	font-size: 0.74rem;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	opacity: 0.6;
+	font-style: normal;
+}
+
+.act-form {
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+}
+
+.act-lede {
+	margin: 0;
+	font-size: 0.88rem;
+	opacity: 0.8;
+}
+
+.act-field {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+.act-field-label i {
+	font-style: normal;
+}
+
+.act-field-help,
+.act-field-error {
+	font-size: 0.75rem;
+	opacity: 0.75;
+}
+
+.act-field.is-invalid input,
+.act-field.is-invalid textarea,
+.act-field.is-invalid select {
+	outline: 2px solid currentColor;
+}
+
+.act-review {
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+}
+
+.act-prompt {
+	margin: 0;
+	font-size: 1.02rem;
+	font-weight: 600;
+}
+
+.act-summary {
+	margin: 0;
+	display: grid;
+	gap: 4px;
+	font-size: 0.82rem;
+}
+
+.act-summary > div {
+	display: grid;
+	grid-template-columns: minmax(120px, 28%) 1fr;
+	gap: 10px;
+}
+
+.act-summary dt {
+	opacity: 0.6;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	font-size: 0.72rem;
+}
+
+.act-summary dd {
+	margin: 0;
+	overflow-wrap: anywhere;
+}
+
+.act-decide {
+	display: flex;
+	gap: 10px;
+	flex-wrap: wrap;
+}
+
+.act-receipt {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.act-ref {
+	margin: 0;
+	font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+	font-size: 1.05rem;
+	letter-spacing: 0.06em;
+}
+
+.act-audit {
+	margin: 0;
+	font-size: 0.72rem;
+	opacity: 0.6;
+}

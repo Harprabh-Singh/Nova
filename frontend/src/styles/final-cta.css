@@ -1,0 +1,553 @@
+/* ============================================================================
+   NOVA — THE THRESHOLD  (closing CTA)
+
+   The last room, and the quietest. Two dark walls, a lit opening, a
+   reflective floor and one sentence. Everything here is subtraction: the
+   earlier sections earned attention and trust, this one only has to earn
+   the click.
+
+   No 3D. Depth is architecture, light, reflection and a few pixels of
+   parallax on the room — never on the typography.
+   ========================================================================== */
+
+.fct {
+	--f-bg: #050706;
+	--f-bone: #f3f1e9;
+	--f-muted: rgba(243, 241, 233, 0.58);
+	--f-tech: rgba(243, 241, 233, 0.32);
+	--f-faint: rgba(243, 241, 233, 0.18);
+	--f-lime: #c8ff3d;
+	--f-ink: #080909;
+	--f-line: rgba(243, 241, 233, 0.12);
+	--f-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+	--f-display: "Anton", "Archivo Black", Impact, "Arial Narrow", sans-serif;
+	--f-ui: "Inter", system-ui, -apple-system, sans-serif;
+	--f-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+	position: relative;
+	isolation: isolate;
+	min-height: 100svh;
+	display: flex;
+	background: var(--f-bg);
+	color: var(--f-bone);
+	overflow: hidden;
+}
+
+/* ------------------------------------------------------------- the room */
+
+.fct-env {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+}
+.fct-env > * {
+	position: absolute;
+	inset: 0;
+}
+
+/* Deepest grade of the whole page: the architecture is present but almost
+   entirely in shadow, so the words are unmistakably the brightest object. */
+.fct-env-image {
+	background: url("/assets/nova/hero-architecture.webp") center 70% / cover no-repeat;
+	filter: grayscale(0.5) brightness(0.2) contrast(1.12);
+	opacity: 0.38;
+	transform: translate3d(var(--f-px, 0px), var(--f-py, 0px), 0) scale(1.05);
+	transition: transform 900ms var(--f-ease);
+}
+
+/* Starts on the evidence wall's closing value — no hard cut between rooms. */
+.fct-env-grade {
+	background: linear-gradient(
+		180deg,
+		#060807 0%,
+		rgba(5, 7, 6, 0.96) 12%,
+		rgba(5, 7, 6, 0.86) 44%,
+		rgba(5, 7, 6, 0.94) 80%,
+		#050706 100%
+	);
+}
+
+/* Daylight through a high opening, directly behind the typography. Subtle
+   green cast, never a neon glow. */
+.fct-env-opening {
+	background:
+		radial-gradient(46% 52% at 50% 40%, rgba(243, 241, 233, 0.11), transparent 70%),
+		radial-gradient(30% 34% at 50% 36%, rgba(200, 255, 61, 0.055), transparent 72%);
+}
+
+.fct-env-opening {
+	transform: translate3d(calc(var(--f-px, 0px) * 0.4), calc(var(--f-py, 0px) * 0.4), 0);
+	transition: transform 1100ms var(--f-ease);
+}
+
+.fct-env-mist {
+	background: linear-gradient(180deg, transparent 30%, rgba(180, 200, 180, 0.035) 62%, transparent 86%);
+}
+
+/* The two framing walls. Heavier at the edges, open in the middle. */
+.fct-env-wall {
+	top: 0;
+	bottom: 0;
+	width: clamp(120px, 20vw, 340px);
+	inset-inline: auto;
+}
+.fct-env-wall.left {
+	left: 0;
+	background: linear-gradient(90deg, rgba(0, 0, 0, 0.92), transparent);
+	border-right: 1px solid rgba(243, 241, 233, 0.06);
+}
+.fct-env-wall.right {
+	right: 0;
+	background: linear-gradient(270deg, rgba(0, 0, 0, 0.92), transparent);
+	border-left: 1px solid rgba(243, 241, 233, 0.06);
+}
+
+/* Same 120px survey module as every other section, barely present. */
+.fct-env-grid {
+	background-image:
+		linear-gradient(90deg, rgba(243, 241, 233, 0.032) 1px, transparent 1px),
+		linear-gradient(180deg, rgba(243, 241, 233, 0.032) 1px, transparent 1px);
+	background-size: 120px 120px;
+	mask-image: radial-gradient(86% 66% at 50% 44%, #000 14%, transparent 82%);
+}
+
+/* Reflective black floor. */
+.fct-env-floor {
+	top: auto;
+	height: 38%;
+	background:
+		linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.6) 48%, rgba(0, 0, 0, 0.9)),
+		linear-gradient(180deg, rgba(200, 255, 61, 0.03), transparent 42%);
+}
+
+.fct-env-vignette {
+	background: radial-gradient(112% 84% at 50% 42%, transparent 38%, rgba(0, 0, 0, 0.84) 100%);
+}
+
+.fct-env-grain {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+	opacity: 0.038;
+	mix-blend-mode: overlay;
+}
+
+/* The evidence wall's four dividers arrive here, then dissolve into the
+   framing rules of this room. */
+.fct-seam {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: clamp(80px, 12vh, 150px);
+	z-index: 1;
+	pointer-events: none;
+	background-image: repeating-linear-gradient(
+		90deg,
+		transparent 0 calc(100% / 4 - 1px),
+		rgba(243, 241, 233, 0.14) calc(100% / 4 - 1px) calc(100% / 4)
+	);
+	mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.85), transparent);
+}
+
+/* ---------------------------------------------------------------- layout */
+
+.fct-inner {
+	position: relative;
+	z-index: 2;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	width: min(1480px, 100% - clamp(24px, 5vw, 96px));
+	margin: 0 auto;
+	padding: clamp(26px, 4vh, 44px) 0 clamp(22px, 3.4vh, 36px);
+}
+
+/* The stage. Deliberately not filled: the empty space is the design. */
+.fct-stage {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	padding: clamp(30px, 7vh, 96px) 0;
+}
+
+/* ----------------------------------------------------------- top brand */
+
+.fct-brand {
+	display: flex;
+	align-items: flex-start;
+	justify-content: space-between;
+	gap: 20px;
+}
+.fct-brand-mark {
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+}
+.fct-brand-name {
+	font-family: var(--f-display);
+	font-size: 20px;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	line-height: 1;
+	color: var(--f-bone);
+}
+.fct-brand-sub {
+	font-family: var(--f-mono);
+	font-size: 8.5px;
+	line-height: 1.5;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+	color: var(--f-tech);
+	padding-top: 2px;
+}
+.fct-brand-status {
+	flex: 0 0 auto;
+}
+
+/* ------------------------------------------------------------ the words */
+
+.fct-label {
+	font-family: var(--f-mono);
+	font-size: 10px;
+	letter-spacing: 0.34em;
+	text-transform: uppercase;
+	color: var(--f-lime);
+}
+.fct-label::before {
+	content: "— ";
+	color: var(--f-tech);
+}
+
+.fct-heading-wrap {
+	position: relative;
+	margin-top: clamp(18px, 3vh, 34px);
+	width: 100%;
+}
+
+/* Solid, no outline: the one decisive statement on the page. Clamped so the
+   two lines never clip, including with a wider fallback face. */
+.fct-heading {
+	margin: 0;
+	font-family: var(--f-display);
+	font-weight: 400;
+	font-size: clamp(46px, 9.6vw, 168px);
+	line-height: 0.86;
+	letter-spacing: -0.025em;
+	text-transform: uppercase;
+	color: var(--f-bone);
+	max-width: 100%;
+	overflow-wrap: break-word;
+}
+.fct-heading span {
+	display: block;
+}
+
+/* Photographic-feeling reflection: flipped, blurred, masked away fast. */
+.fct-heading-echo {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 100%;
+	margin: 4px 0 0;
+	font-family: var(--f-display);
+	font-weight: 400;
+	font-size: clamp(46px, 9.6vw, 168px);
+	line-height: 0.86;
+	letter-spacing: -0.025em;
+	text-transform: uppercase;
+	color: rgba(243, 241, 233, 0.12);
+	transform: scaleY(-1);
+	transform-origin: top;
+	filter: blur(3px);
+	mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.5), transparent 42%);
+	pointer-events: none;
+	height: 0;
+	overflow: visible;
+}
+.fct-heading-echo span {
+	display: block;
+}
+
+.fct-copy {
+	margin: clamp(26px, 4vh, 46px) auto 0;
+	max-width: 640px;
+	font-family: var(--f-ui);
+	font-size: 15px;
+	line-height: 1.6;
+	color: var(--f-muted);
+}
+
+/* ---------------------------------------------------------------- doors */
+
+.fct-cta {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 14px;
+	margin-top: clamp(28px, 4vh, 44px);
+	flex-wrap: wrap;
+}
+
+.fct-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	padding: 15px 26px;
+	border-radius: 2px;
+	font-family: var(--f-mono);
+	font-size: 11px;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition:
+		transform 400ms var(--f-ease),
+		box-shadow 400ms var(--f-ease),
+		border-color 400ms var(--f-ease),
+		color 400ms var(--f-ease);
+}
+
+/* Primary dominates. */
+.fct-btn.primary {
+	background: var(--f-lime);
+	color: var(--f-ink);
+	border: 1px solid var(--f-lime);
+	box-shadow: 5px 5px 0 var(--f-ink);
+}
+.fct-btn.primary:hover,
+.fct-btn.primary:focus-visible {
+	transform: translateY(-3px);
+	box-shadow: 7px 8px 0 var(--f-ink);
+}
+.fct-btn-arrow {
+	display: inline-block;
+	transition: transform 400ms var(--f-ease);
+}
+.fct-btn.primary:hover .fct-btn-arrow,
+.fct-btn.primary:focus-visible .fct-btn-arrow {
+	transform: translateX(5px);
+}
+
+/* Same footprint, inverted material — clearly the second path. */
+.fct-btn.secondary {
+	background: rgba(8, 9, 8, 0.65);
+	color: var(--f-bone);
+	border: 1px solid var(--f-bone);
+	box-shadow: 4px 4px 0 var(--f-lime);
+}
+.fct-btn.secondary:hover,
+.fct-btn.secondary:focus-visible {
+	transform: translateY(-3px);
+	border-color: var(--f-lime);
+	box-shadow: 6px 6px 0 var(--f-lime);
+}
+
+.fct-btn:focus-visible {
+	outline: 2px solid var(--f-lime);
+	outline-offset: 4px;
+}
+
+/* ----------------------------------------------------- wall annotations */
+
+.fct-annotations {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+}
+.fct-annotation {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	margin: 0;
+	font-family: var(--f-mono);
+	font-size: 9px;
+	line-height: 2;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+	color: rgba(243, 241, 233, 0.22);
+}
+.fct-annotation span {
+	display: block;
+}
+.fct-annotation.left {
+	left: 0;
+}
+.fct-annotation.right {
+	right: 0;
+	text-align: right;
+}
+
+/* ----------------------------------------------------------- page marker */
+
+.fct-foot {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 20px;
+	padding-top: 16px;
+	border-top: 1px solid var(--f-line);
+	font-family: var(--f-mono);
+	font-size: 9px;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: var(--f-tech);
+}
+.fct-foot-stamp {
+	display: inline-flex;
+	align-items: center;
+	gap: 16px;
+}
+.fct-foot-page {
+	font-weight: 400;
+	color: var(--f-lime);
+	opacity: 0.7;
+}
+
+/* ---------------------------------------------------------------- entry */
+
+@media (prefers-reduced-motion: no-preference) {
+	.fct-label,
+	.fct-heading span:first-child,
+	.fct-heading span:last-child,
+	.fct-copy,
+	.fct-cta,
+	.fct-brand,
+	.fct-foot {
+		animation: fct-in 900ms var(--f-ease) both;
+	}
+	.fct-brand {
+		animation-delay: 60ms;
+	}
+	.fct-label {
+		animation-delay: 140ms;
+	}
+	.fct-heading span:first-child {
+		animation-delay: 260ms;
+	}
+	.fct-heading span:last-child {
+		animation-delay: 400ms;
+	}
+	.fct-copy {
+		animation-delay: 540ms;
+	}
+	.fct-cta {
+		animation-delay: 660ms;
+	}
+	.fct-foot {
+		animation-delay: 780ms;
+	}
+
+	/* The light breathes very slightly. A brightness change, nothing more. */
+	.fct-env-opening {
+		animation: fct-light 14s ease-in-out infinite;
+	}
+}
+
+@keyframes fct-in {
+	from {
+		opacity: 0;
+		transform: translateY(22px);
+		filter: blur(4px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+		filter: blur(0);
+	}
+}
+@keyframes fct-light {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.86;
+	}
+}
+
+/* ----------------------------------------------------------- responsive */
+
+@media (max-width: 1180px) {
+	.fct-annotation {
+		font-size: 8.5px;
+	}
+	.fct-seam {
+		background-image: repeating-linear-gradient(
+			90deg,
+			transparent 0 calc(100% / 2 - 1px),
+			rgba(243, 241, 233, 0.13) calc(100% / 2 - 1px) calc(100% / 2)
+		);
+	}
+}
+
+@media (max-width: 860px) {
+	/* Recomposed, not shrunk: one column, annotations gone, walls narrower. */
+	.fct-annotations {
+		display: none;
+	}
+	.fct-env-wall {
+		width: 64px;
+	}
+	.fct-brand-sub {
+		display: none;
+	}
+	.fct-stage {
+		padding: clamp(40px, 9vh, 80px) 0;
+	}
+	.fct-heading,
+	.fct-heading-echo {
+		font-size: clamp(42px, 13.4vw, 74px);
+	}
+	.fct-copy {
+		font-size: 14px;
+	}
+	.fct-cta {
+		flex-direction: column;
+		align-items: stretch;
+		width: min(360px, 100%);
+	}
+	.fct-btn {
+		justify-content: center;
+	}
+	.fct-foot {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 8px;
+	}
+	.fct-foot-stamp {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 4px;
+	}
+}
+
+/* ------------------------------------------------------- reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+	.fct-label,
+	.fct-heading span,
+	.fct-copy,
+	.fct-cta,
+	.fct-brand,
+	.fct-foot,
+	.fct-env-opening {
+		animation: none !important;
+		opacity: 1;
+		transform: none;
+		filter: none;
+	}
+	.fct-btn,
+	.fct-btn-arrow {
+		transition: none;
+	}
+	.fct-btn:hover,
+	.fct-btn:focus-visible {
+		transform: none;
+	}
+	.fct-env-image {
+		transform: none;
+	}
+}

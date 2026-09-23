@@ -1,0 +1,841 @@
+/* ==========================================================================
+   NOVA — "HOW IT WORKS" / FIVE MOVES. ZERO GUESSWORK.
+
+   One pinned architectural stage. Vertical scroll becomes horizontal travel
+   through five chapters, all inside the same room as the hero and the proof
+   chamber: same photograph, same grade, same survey grid, same grain.
+
+   Layers read one value — --hw-p (0 → 1) — written once per frame by the
+   section. Cards travel at 100%, interiors slightly faster, the room at 12%,
+   the overlays at 6%, grain static. That difference in rate is the depth;
+   there is no 3D anywhere in this file.
+   ========================================================================== */
+
+.hiw {
+	--hw-bg: #070908;
+	--hw-bone: #f3f1e9;
+	--hw-muted: rgba(243, 241, 233, 0.6);
+	--hw-tech: rgba(243, 241, 233, 0.34);
+	--hw-lime: #c8ff3d;
+	--hw-cyan: #4fe3e3;
+	--hw-pink: #ff2387;
+	--hw-line: rgba(243, 241, 233, 0.12);
+	--hw-display: "Anton", "Archivo Black", Impact, "Arial Narrow", sans-serif;
+	--hw-ui: "Inter", system-ui, sans-serif;
+	--hw-mono: "IBM Plex Mono", ui-monospace, monospace;
+	--hw-ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+	position: relative;
+	background: var(--hw-bg);
+	color: var(--hw-bone);
+	/* Vertical gestures stay native; horizontal ones become chapter travel. */
+	touch-action: pan-y;
+	cursor: grab;
+	margin-top: -1px;
+}
+.hiw.is-dragging { cursor: grabbing; }
+.hiw.is-dragging .hiw-inner { user-select: none; }
+
+.hiw *,
+.hiw *::before,
+.hiw *::after { box-sizing: border-box; }
+
+.hiw h2,
+.hiw h3,
+.hiw p { margin: 0; }
+.hiw ol,
+.hiw ul,
+.hiw dl,
+.hiw dd { margin: 0; padding: 0; list-style: none; }
+.hiw button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+.hiw :focus-visible { outline: 1px solid var(--hw-accent, var(--hw-lime)); outline-offset: 5px; }
+
+/* The accent signal transitions chapter to chapter: lime → cyan → pink →
+   lime → cyan, gradually, never as a hard colour cut. */
+.hiw-stage {
+	--hw-p: 0;
+	--hw-accent: var(--hw-lime);
+	position: sticky;
+	top: 0;
+	height: 100svh;
+	overflow: hidden;
+	isolation: isolate;
+	contain: paint;
+	transition: --hw-accent 0.8s linear;
+}
+.hiw-stage[data-accent="cyan"] { --hw-accent: var(--hw-cyan); }
+.hiw-stage[data-accent="pink"] { --hw-accent: var(--hw-pink); }
+
+.hiw-inner {
+	position: relative;
+	z-index: 2;
+	height: 100%;
+	display: grid;
+	grid-template-rows: auto 1fr auto;
+	padding: clamp(52px, 6.4vh, 78px) 0 clamp(18px, 3vh, 30px);
+}
+
+/* --------------------------------------------------------- the room, again */
+
+.hiw-env {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+}
+
+/* The same architectural photograph as the hero, pushed deeper into the
+   building. It drifts at 12% of the cards' rate. */
+.hiw-env-image {
+	position: absolute;
+	inset: -4% -8%;
+	background-image: url("/assets/nova/hero-architecture.webp");
+	background-size: cover;
+	background-position: 50% 44%;
+	transform: translate3d(calc(var(--hw-p) * -6vw), 0, 0) scale(1.08);
+	filter: saturate(0.82);
+}
+
+.hiw-env-grade {
+	position: absolute;
+	inset: 0;
+	background:
+		linear-gradient(180deg, rgba(7, 9, 8, 0.96) 0%, rgba(7, 9, 8, 0.72) 26%, rgba(7, 9, 8, 0.8) 62%, rgba(7, 9, 8, 0.97) 100%),
+		radial-gradient(ellipse 60% 40% at 50% 6%, rgba(150, 178, 192, 0.12), transparent 72%);
+}
+
+/* Black-glass structural bays, moving at 6% — the slowest readable layer. */
+.hiw-env-columns {
+	position: absolute;
+	inset: -2% -10%;
+	background-image: repeating-linear-gradient(
+		90deg,
+		rgba(243, 241, 233, 0.05) 0 1px,
+		transparent 1px 18vw
+	);
+	transform: translate3d(calc(var(--hw-p) * -3vw), 0, 0);
+	-webkit-mask-image: linear-gradient(180deg, transparent, #000 22%, #000 72%, transparent);
+	mask-image: linear-gradient(180deg, transparent, #000 22%, #000 72%, transparent);
+}
+
+/* Survey grid: aligns with the card gutter, the chapter numbers and the
+   progress rail. Same 120px module as the hero. */
+.hiw-env-grid {
+	position: absolute;
+	inset: 0;
+	background-image:
+		linear-gradient(rgba(243, 241, 233, 0.03) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(243, 241, 233, 0.03) 1px, transparent 1px);
+	background-size: 120px 120px;
+	transform: translate3d(calc(var(--hw-p) * -60px), 0, 0);
+	-webkit-mask-image: radial-gradient(ellipse 78% 68% at 50% 52%, #000 10%, rgba(0, 0, 0, 0.3) 66%, transparent 100%);
+	mask-image: radial-gradient(ellipse 78% 68% at 50% 52%, #000 10%, rgba(0, 0, 0, 0.3) 66%, transparent 100%);
+}
+
+/* Reflective floor, continuing from the hero. */
+.hiw-env-floor {
+	position: absolute;
+	inset: auto 0 0 0;
+	height: 40%;
+	background: linear-gradient(180deg, transparent, rgba(243, 241, 233, 0.035) 58%, rgba(7, 9, 8, 0.72));
+	-webkit-mask-image: radial-gradient(ellipse 52% 100% at 50% 100%, #000, transparent 78%);
+	mask-image: radial-gradient(ellipse 52% 100% at 50% 100%, #000, transparent 78%);
+}
+
+/* The only colour in the room: a low pool of light behind the active
+   chapter, following the accent of that chapter. */
+.hiw-env-accent {
+	position: absolute;
+	inset: 0;
+	opacity: 0.5;
+	background: radial-gradient(
+		ellipse 34% 46% at calc(26% + var(--hw-p) * 26%) 56%,
+		color-mix(in srgb, var(--hw-accent) 16%, transparent),
+		transparent 70%
+	);
+	transition: background 0.9s linear;
+}
+
+.hiw-env-vignette {
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(ellipse 80% 74% at 50% 50%, transparent 40%, rgba(3, 4, 4, 0.8) 100%);
+}
+
+.hiw-env-grain {
+	position: absolute;
+	inset: 0;
+	opacity: 0.16;
+	mix-blend-mode: overlay;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+}
+
+/* ------------------------------------------------------------------ head */
+
+.hiw-head {
+	padding: 0 clamp(20px, 5vw, 78px);
+}
+
+.hiw-kicker {
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	font-family: var(--hw-mono);
+	font-size: 10px;
+	letter-spacing: 0.34em;
+	text-transform: uppercase;
+	color: var(--hw-tech);
+}
+.hiw-kicker::before {
+	content: "";
+	width: 26px;
+	height: 1px;
+	background: var(--hw-accent);
+	opacity: 0.8;
+}
+
+.hiw-title {
+	margin-top: clamp(10px, 1.4vh, 18px) !important;
+	font-family: var(--hw-display);
+	font-weight: 400;
+	/* Sized against the longer of the two lines so the display type never
+	   runs past the right edge, including when the condensed display face
+	   falls back to a wider system grotesk. */
+	font-size: clamp(32px, 5.4vw, 88px);
+	line-height: 0.9;
+	letter-spacing: -0.015em;
+	text-transform: uppercase;
+	max-width: 100%;
+	overflow-wrap: break-word;
+}
+/* Each phrase owns its own line. */
+.hiw-title .solid,
+.hiw-title .outline { display: block; }
+.hiw-title .solid { color: var(--hw-bone); }
+.hiw-title .outline {
+	color: transparent;
+	-webkit-text-stroke: 1px var(--hw-lime);
+	/* The outline draws on rather than typing in. */
+	opacity: 0;
+	animation: hiw-stroke-in 1.4s var(--hw-ease) 0.5s forwards;
+}
+@keyframes hiw-stroke-in {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+.hiw-sub {
+	margin-top: clamp(10px, 1.4vh, 18px) !important;
+	font-family: var(--hw-mono);
+	font-size: 10px;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+	color: rgba(243, 241, 233, 0.28);
+}
+.hiw-sub i { font-style: normal; color: var(--hw-accent); opacity: 0.7; padding: 0 2px; }
+
+/* ----------------------------------------------------------------- track */
+
+.hiw-track {
+	display: flex;
+	align-items: center;
+	gap: clamp(20px, 2.2vw, 40px);
+	padding: 0 clamp(20px, 5vw, 78px);
+	will-change: transform;
+	backface-visibility: hidden;
+}
+.hiw-track-tail { flex: 0 0 clamp(20px, 6vw, 120px); }
+
+/* ------------------------------------------------------------------ card */
+
+.hiw-card {
+	position: relative;
+	flex: 0 0 clamp(300px, 27vw, 430px);
+	height: clamp(352px, 50vh, 520px);
+	padding: clamp(22px, 2vw, 32px);
+	display: grid;
+	grid-template-rows: auto auto auto 1fr auto;
+	gap: clamp(10px, 1.2vh, 16px);
+	background: rgba(8, 9, 9, 0.72);
+	border: 1px solid rgba(243, 241, 233, 0.09);
+	backdrop-filter: blur(9px);
+	-webkit-backdrop-filter: blur(9px);
+	box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
+	transform: translate3d(0, var(--off), 0) rotate(var(--rot)) scale(0.975);
+	opacity: 0.68;
+	transition: opacity 0.6s var(--hw-ease), transform 0.6s var(--hw-ease), border-color 0.6s linear;
+	overflow: hidden;
+}
+/* Concrete tooth: a texture, not a gradient sheen. */
+.hiw-card::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	opacity: 0.5;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23p)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+.hiw-card[data-accent="lime"] { --card-accent: var(--hw-lime); }
+.hiw-card[data-accent="cyan"] { --card-accent: var(--hw-cyan); }
+.hiw-card[data-accent="pink"] { --card-accent: var(--hw-pink); }
+
+.hiw-card.is-active {
+	opacity: 1;
+	transform: translate3d(0, var(--off), 0) rotate(var(--rot)) scale(1);
+	border-color: rgba(243, 241, 233, 0.2);
+}
+.hiw-card.is-passed { opacity: 0.58; }
+
+/* The narrow coloured edge — the only place the accent touches the panel. */
+.hiw-card-edge {
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 2px;
+	background: var(--card-accent);
+	opacity: 0.32;
+	transform-origin: 50% 0;
+	transform: scaleY(0.3);
+	transition: transform 0.9s var(--hw-ease), opacity 0.6s linear;
+}
+.hiw-card.is-active .hiw-card-edge,
+.hiw-card.is-passed .hiw-card-edge { transform: scaleY(1); opacity: 0.85; }
+
+.hiw-card-head {
+	display: flex;
+	align-items: baseline;
+	gap: 14px;
+}
+.hiw-card-no {
+	font-family: var(--hw-display);
+	font-size: clamp(46px, 4.4vw, 74px);
+	line-height: 0.8;
+	color: transparent;
+	-webkit-text-stroke: 1px rgba(243, 241, 233, 0.24);
+	transition: -webkit-text-stroke-color 0.6s linear;
+}
+.hiw-card.is-active .hiw-card-no { -webkit-text-stroke-color: rgba(243, 241, 233, 0.4); }
+.hiw-card-label {
+	font-family: var(--hw-mono);
+	font-size: 10px;
+	letter-spacing: 0.3em;
+	text-transform: uppercase;
+	color: var(--card-accent);
+	opacity: 0.62;
+	transition: opacity 0.6s linear;
+}
+.hiw-card.is-active .hiw-card-label { opacity: 1; }
+
+.hiw-card-title {
+	font-family: var(--hw-display);
+	font-weight: 400;
+	font-size: clamp(22px, 2vw, 31px);
+	line-height: 1.02;
+	letter-spacing: -0.005em;
+	text-transform: uppercase;
+	color: rgba(243, 241, 233, 0.82);
+	transition: color 0.6s linear;
+}
+.hiw-card.is-active .hiw-card-title { color: var(--hw-bone); }
+
+.hiw-card-copy {
+	display: grid;
+	gap: 8px;
+	max-width: 34ch;
+}
+.hiw-card-copy p {
+	font-family: var(--hw-ui);
+	font-size: 13.5px;
+	line-height: 1.62;
+	color: var(--hw-muted);
+}
+
+.hiw-card-visual {
+	position: relative;
+	align-self: center;
+	width: 100%;
+	/* Interiors travel slightly faster than the panel: parallax inside the
+	   card, still flat. */
+	transform: translate3d(calc(var(--hw-p, 0) * 6px), 0, 0);
+}
+
+.hiw-card-meta {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 14px;
+	padding-top: 12px;
+	border-top: 1px solid rgba(243, 241, 233, 0.08);
+	font-family: var(--hw-mono);
+	font-size: 9px;
+	letter-spacing: 0.22em;
+	color: rgba(243, 241, 233, 0.3);
+	transition: color 0.6s linear;
+}
+.hiw-card.is-active .hiw-card-meta { color: rgba(243, 241, 233, 0.46); }
+
+.hiw-card-stamp {
+	position: absolute;
+	right: -26px;
+	bottom: 74px;
+	transform: rotate(90deg);
+	transform-origin: 100% 100%;
+	font-family: var(--hw-mono);
+	font-size: 8px;
+	letter-spacing: 0.34em;
+	color: rgba(243, 241, 233, 0.16);
+	white-space: nowrap;
+}
+
+/* ------------------------------------------------- 01 · document artifacts */
+
+.hiw-docs {
+	position: relative;
+	display: flex;
+	gap: 10px;
+	padding-bottom: 14px;
+}
+.hiw-doc {
+	position: relative;
+	flex: 1 1 0;
+	min-width: 0;
+	padding: 12px 11px 10px;
+	border: 1px solid rgba(243, 241, 233, 0.13);
+	background: linear-gradient(180deg, rgba(243, 241, 233, 0.06), rgba(243, 241, 233, 0.02));
+	transform: translate3d(0, calc(var(--i) * -4px), 0) rotate(calc((var(--i) - 1) * 1.1deg));
+	display: grid;
+	gap: 8px;
+}
+.hiw-doc-mark {
+	width: 5px;
+	height: 5px;
+	border: 1px solid var(--card-accent);
+	opacity: 0;
+	transition: opacity 0.4s linear;
+}
+.hiw-card.is-active .hiw-doc-mark { opacity: 0.9; transition-delay: calc(0.18s * var(--i) + 0.1s); }
+.hiw-doc-title {
+	font-family: var(--hw-ui);
+	font-size: 10.5px;
+	line-height: 1.35;
+	letter-spacing: 0.04em;
+	text-transform: uppercase;
+	color: rgba(243, 241, 233, 0.8);
+}
+.hiw-doc-rules {
+	display: block;
+	height: 14px;
+	background-image: repeating-linear-gradient(
+		180deg,
+		rgba(243, 241, 233, 0.16) 0 1px,
+		transparent 1px 5px
+	);
+}
+.hiw-doc-meta {
+	font-family: var(--hw-mono);
+	font-size: 8px;
+	letter-spacing: 0.2em;
+	color: rgba(243, 241, 233, 0.34);
+}
+.hiw-docs-rail {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 1px;
+	background: linear-gradient(90deg, var(--card-accent), transparent);
+	opacity: 0.25;
+	transform: scaleX(0.2);
+	transform-origin: 0 50%;
+	transition: transform 1s var(--hw-ease);
+}
+.hiw-card.is-active .hiw-docs-rail { transform: scaleX(1); }
+
+/* -------------------------------------------------- 02 · identity record */
+
+.hiw-identity {
+	border: 1px solid rgba(243, 241, 233, 0.1);
+	background: rgba(243, 241, 233, 0.025);
+}
+.hiw-identity-head,
+.hiw-retrieval-head,
+.hiw-ground-head,
+.hiw-action-head {
+	display: flex;
+	justify-content: space-between;
+	gap: 10px;
+	padding: 8px 11px;
+	border-bottom: 1px solid rgba(243, 241, 233, 0.1);
+	font-family: var(--hw-mono);
+	font-size: 8.5px;
+	letter-spacing: 0.26em;
+	color: rgba(243, 241, 233, 0.4);
+}
+.hiw-identity-rows { padding: 4px 11px 8px; }
+.hiw-identity-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 12px;
+	padding: 6px 0;
+	border-bottom: 1px solid rgba(243, 241, 233, 0.05);
+}
+.hiw-identity-row dt {
+	font-family: var(--hw-mono);
+	font-size: 8.5px;
+	letter-spacing: 0.22em;
+	color: rgba(243, 241, 233, 0.34);
+}
+.hiw-identity-row dd {
+	font-family: var(--hw-ui);
+	font-size: 11.5px;
+	color: rgba(243, 241, 233, 0.86);
+	text-align: right;
+}
+.hiw-identity-access {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	padding: 9px 11px;
+	border-top: 1px solid rgba(243, 241, 233, 0.1);
+	font-family: var(--hw-mono);
+	font-size: 9px;
+	letter-spacing: 0.24em;
+}
+.hiw-identity-access .k { color: rgba(243, 241, 233, 0.34); }
+.hiw-identity-access .v { margin-left: auto; color: var(--card-accent); opacity: 0.55; transition: opacity 0.5s linear; }
+.hiw-identity-access .lock {
+	display: inline-grid;
+	place-items: center;
+	width: 18px;
+	height: 18px;
+	border: 1px solid rgba(243, 241, 233, 0.16);
+	color: rgba(243, 241, 233, 0.4);
+	transition: color 0.5s linear, border-color 0.5s linear;
+}
+.hiw-identity-access .lock svg { width: 11px; height: 11px; }
+.hiw-card.is-active .hiw-identity-access .v { opacity: 1; }
+.hiw-card.is-active .hiw-identity-access .lock { color: var(--card-accent); border-color: color-mix(in srgb, var(--card-accent) 45%, transparent); }
+
+/* ------------------------------------------------- 03 · retrieval matrix */
+
+.hiw-retrieval {
+	border: 1px solid rgba(243, 241, 233, 0.1);
+	background: rgba(243, 241, 233, 0.025);
+}
+.hiw-retrieval-body { position: relative; padding: 8px 11px; }
+.hiw-retrieval-lines {
+	position: absolute;
+	left: 0;
+	top: 8px;
+	width: 26px;
+	height: calc(100% - 16px);
+	fill: none;
+	stroke: var(--card-accent);
+	stroke-width: 0.6;
+	opacity: 0.3;
+}
+.hiw-retrieval-lines path {
+	stroke-dasharray: 60;
+	stroke-dashoffset: 60;
+	transition: stroke-dashoffset 1.1s var(--hw-ease);
+}
+.hiw-card.is-active .hiw-retrieval-lines path { stroke-dashoffset: 0; }
+.hiw-card.is-active .hiw-retrieval-lines path:nth-child(2) { transition-delay: 0.1s; }
+.hiw-card.is-active .hiw-retrieval-lines path:nth-child(3) { transition-delay: 0.2s; }
+.hiw-card.is-active .hiw-retrieval-lines path:nth-child(4) { transition-delay: 0.3s; }
+
+.hiw-retrieval-list { padding-left: 26px; }
+.hiw-retrieval-list li {
+	display: flex;
+	align-items: center;
+	gap: 9px;
+	padding: 5.5px 0;
+	border-bottom: 1px solid rgba(243, 241, 233, 0.05);
+	font-family: var(--hw-ui);
+	font-size: 11px;
+	color: rgba(243, 241, 233, 0.5);
+	transition: color 0.5s linear;
+}
+.hiw-retrieval-list .no {
+	font-family: var(--hw-mono);
+	font-size: 8.5px;
+	letter-spacing: 0.16em;
+	color: rgba(243, 241, 233, 0.28);
+}
+.hiw-retrieval-list .t { flex: 1 1 auto; }
+.hiw-retrieval-list .dot {
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: rgba(243, 241, 233, 0.18);
+}
+.hiw-card.is-active .hiw-retrieval-list .is-hit { color: var(--hw-bone); }
+.hiw-card.is-active .hiw-retrieval-list .is-hit .dot { background: var(--card-accent); }
+
+.hiw-retrieval-matches {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 10px;
+	padding: 8px 11px 9px;
+	border-top: 1px solid rgba(243, 241, 233, 0.1);
+	font-family: var(--hw-mono);
+	font-size: 8px;
+	letter-spacing: 0.2em;
+	color: rgba(243, 241, 233, 0.3);
+}
+.hiw-retrieval-matches i { font-style: normal; color: var(--card-accent); opacity: 0; transition: opacity 0.4s linear; }
+.hiw-card.is-active .hiw-retrieval-matches i { opacity: 0.8; transition-delay: calc(0.15s * var(--i) + 0.3s); }
+
+/* -------------------------------------------------- 04 · citation trace */
+
+.hiw-ground {
+	border: 1px solid rgba(243, 241, 233, 0.1);
+	background: rgba(243, 241, 233, 0.025);
+}
+.hiw-ground-answer {
+	padding: 12px 12px 10px;
+	font-family: var(--hw-ui);
+	font-size: 13px;
+	line-height: 1.5;
+	color: rgba(243, 241, 233, 0.9);
+}
+.hiw-ground-drop {
+	display: block;
+	margin: 0 12px;
+	height: 14px;
+	border-left: 1px solid var(--card-accent);
+	opacity: 0.35;
+}
+.hiw-ground-cites { padding: 0 12px; }
+.hiw-ground-cites li {
+	display: flex;
+	align-items: baseline;
+	gap: 9px;
+	padding: 6px 0;
+	border-bottom: 1px solid rgba(243, 241, 233, 0.05);
+	font-family: var(--hw-ui);
+	font-size: 11px;
+	color: rgba(243, 241, 233, 0.62);
+	opacity: 0.4;
+	transition: opacity 0.5s var(--hw-ease);
+}
+.hiw-card.is-active .hiw-ground-cites li { opacity: 1; transition-delay: calc(0.16s * var(--i) + 0.15s); }
+.hiw-ground-cites .ref {
+	font-family: var(--hw-mono);
+	font-size: 8.5px;
+	letter-spacing: 0.14em;
+	color: var(--card-accent);
+}
+.hiw-ground-cites .t { flex: 1 1 auto; }
+.hiw-ground-cites .s { font-family: var(--hw-mono); font-size: 9px; color: rgba(243, 241, 233, 0.4); }
+.hiw-ground-verified {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	padding: 9px 12px;
+	font-family: var(--hw-mono);
+	font-size: 8.5px;
+	letter-spacing: 0.26em;
+	color: rgba(243, 241, 233, 0.38);
+}
+.hiw-ground-verified .tick {
+	width: 6px;
+	height: 6px;
+	background: var(--card-accent);
+	opacity: 0.25;
+	transition: opacity 0.5s linear;
+}
+.hiw-card.is-active .hiw-ground-verified .tick { opacity: 1; }
+
+/* --------------------------------------------------- 05 · action record */
+
+.hiw-action {
+	border: 1px solid rgba(243, 241, 233, 0.1);
+	background: rgba(243, 241, 233, 0.025);
+}
+.hiw-action-status { position: relative; display: inline-grid; }
+.hiw-action-status i {
+	grid-area: 1 / 1;
+	font-style: normal;
+	transition: opacity 0.5s linear;
+}
+.hiw-action-status .from { color: rgba(243, 241, 233, 0.4); opacity: 1; }
+.hiw-action-status .to { color: var(--card-accent); opacity: 0; }
+.hiw-card.is-active .hiw-action-status .from { opacity: 0; }
+.hiw-card.is-active .hiw-action-status .to { opacity: 1; transition-delay: 0.35s; }
+
+.hiw-action-title {
+	padding: 12px 12px 0;
+	font-family: var(--hw-display);
+	font-weight: 400;
+	font-size: 17px;
+	letter-spacing: 0.01em;
+	text-transform: uppercase;
+	color: rgba(243, 241, 233, 0.9);
+}
+.hiw-action-body {
+	padding: 6px 12px 10px;
+	font-family: var(--hw-ui);
+	font-size: 12px;
+	color: var(--hw-muted);
+}
+.hiw-action-rows { padding: 0 12px 10px; }
+.hiw-action-rows > div {
+	display: flex;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 5.5px 0;
+	border-top: 1px solid rgba(243, 241, 233, 0.05);
+}
+.hiw-action-rows dt {
+	font-family: var(--hw-mono);
+	font-size: 8.5px;
+	letter-spacing: 0.22em;
+	color: rgba(243, 241, 233, 0.32);
+}
+.hiw-action-rows dd { font-family: var(--hw-mono); font-size: 10px; color: rgba(243, 241, 233, 0.78); }
+
+/* -------------------------------------------------------------- progress */
+
+.hiw-progress {
+	padding: 0 clamp(20px, 5vw, 78px);
+	display: grid;
+	gap: clamp(8px, 1.2vh, 14px);
+}
+.hiw-progress-hint {
+	font-family: var(--hw-mono);
+	font-size: 9px;
+	letter-spacing: 0.3em;
+	text-transform: uppercase;
+	color: rgba(243, 241, 233, 0.26);
+}
+.hiw-progress-hint i { font-style: normal; color: var(--hw-accent); animation: hiw-nudge 2.6s ease-in-out infinite; display: inline-block; }
+@keyframes hiw-nudge {
+	0%, 100% { transform: translate3d(0, 0, 0); opacity: 0.55; }
+	50% { transform: translate3d(4px, 0, 0); opacity: 1; }
+}
+
+.hiw-progress-rail {
+	position: relative;
+	display: grid;
+	grid-template-columns: repeat(5, 1fr);
+	padding-top: 14px;
+}
+.hiw-progress-line {
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	height: 1px;
+	background: rgba(243, 241, 233, 0.1);
+}
+.hiw-progress-line i {
+	display: block;
+	height: 100%;
+	background: var(--hw-accent);
+	transform: scaleX(var(--hw-p, 0));
+	transform-origin: 0 50%;
+	opacity: 0.7;
+	will-change: transform;
+}
+.hiw-progress-rail li { position: relative; }
+.hiw-progress-rail button {
+	display: grid;
+	gap: 4px;
+	padding: 10px 0 4px;
+	text-align: left;
+	min-height: 44px;
+}
+.hiw-progress-rail .mark {
+	position: absolute;
+	top: -4px;
+	left: 0;
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	border: 1px solid rgba(243, 241, 233, 0.28);
+	background: var(--hw-bg);
+	transition: background 0.4s linear, border-color 0.4s linear, transform 0.4s var(--hw-ease);
+}
+.hiw-progress-rail .no,
+.hiw-progress-rail .name {
+	font-family: var(--hw-mono);
+	font-size: 9px;
+	letter-spacing: 0.24em;
+	color: rgba(243, 241, 233, 0.26);
+	transition: color 0.4s linear;
+}
+.hiw-progress-rail .name { letter-spacing: 0.2em; }
+.hiw-progress-rail .is-passed .no,
+.hiw-progress-rail .is-passed .name { color: rgba(243, 241, 233, 0.42); }
+.hiw-progress-rail .is-passed .mark { border-color: color-mix(in srgb, var(--hw-accent) 50%, transparent); }
+.hiw-progress-rail .is-active .no { color: rgba(243, 241, 233, 0.6); }
+.hiw-progress-rail .is-active .name { color: var(--hw-bone); }
+.hiw-progress-rail .is-active .mark {
+	background: var(--hw-accent);
+	border-color: var(--hw-accent);
+	transform: scale(1.15);
+}
+
+/* ------------------------------------------------------------- responsive */
+
+@media (max-width: 1280px) {
+	.hiw-card { flex-basis: clamp(300px, 34vw, 400px); }
+}
+
+/* Tablet: 2–3 chapters in frame. */
+@media (max-width: 1024px) {
+	.hiw-card { flex-basis: clamp(290px, 42vw, 380px); }
+	.hiw-card-stamp { display: none; }
+}
+
+/* Mobile: one chapter at a time, native swipe with snapping. No sticky
+   vertical-to-horizontal mapping — on a phone that reads as broken. */
+.hiw.is-mobile { height: auto !important; }
+.hiw.is-mobile .hiw-stage {
+	position: relative;
+	height: auto;
+	min-height: 100svh;
+}
+.hiw.is-mobile .hiw-inner { padding-bottom: 28px; }
+.hiw.is-mobile .hiw-track {
+	overflow-x: auto;
+	overflow-y: hidden;
+	scroll-snap-type: x mandatory;
+	transform: none !important;
+	scrollbar-width: none;
+	padding-block: 24px;
+}
+.hiw.is-mobile .hiw-track::-webkit-scrollbar { display: none; }
+.hiw.is-mobile .hiw-card {
+	flex-basis: min(86vw, 420px);
+	height: clamp(440px, 72vh, 620px);
+	scroll-snap-align: center;
+	transform: translate3d(0, 0, 0) rotate(calc(var(--rot) * 0.5));
+}
+.hiw.is-mobile .hiw-card.is-active { transform: translate3d(0, 0, 0) rotate(calc(var(--rot) * 0.5)); }
+
+@media (max-width: 860px) {
+	.hiw-title { font-size: clamp(30px, 8.4vw, 52px); }
+	.hiw-sub { font-size: 9px; letter-spacing: 0.16em; }
+	.hiw-card-copy { max-width: none; }
+	.hiw-progress-rail { grid-template-columns: repeat(5, 1fr); }
+	.hiw-progress-rail .name { display: none; }
+}
+
+/* ---------------------------------------------------------- reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+	.hiw-title .outline { animation: none; opacity: 1; }
+	.hiw-progress-hint i { animation: none; }
+	.hiw-env-image,
+	.hiw-env-columns,
+	.hiw-env-grid,
+	.hiw-card-visual { transform: none !important; }
+	.hiw-card,
+	.hiw-card *,
+	.hiw-progress-rail * { transition-duration: 0.001s !important; }
+	.hiw-card { transform: translate3d(0, var(--off), 0) rotate(var(--rot)) !important; }
+}

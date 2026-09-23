@@ -1,0 +1,20 @@
+node_modules/
+
+# The Azure Functions app is a separate package with its own build output.
+azure-functions/*/dist/
+azure-functions/*/local.settings.json
+
+# Never commit real credentials. .env.example is the only tracked env file.
+.env
+.env.*
+!.env.example
+# The demo template is placeholders only and is meant to be tracked.
+!.env.demo.example
+data/
+frontend/dist/
+*.log
+.DS_Store
+.tsbuildinfo
+
+# One-time marker written by scripts/demo-setup.ps1 after a successful forced Azure reindex.
+.demo-azure-search-reindexed

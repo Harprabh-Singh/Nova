@@ -1,0 +1,52 @@
+{
+  "name": "nova-knowledge-platform",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "NOVA - Enterprise Knowledge Intelligence Platform (multi-tenant RAG, local-first)",
+  "scripts": {
+    "dev": "npm run build:web && tsx backend/src/main.ts",
+    "start": "tsx backend/src/main.ts",
+    "build": "npm run typecheck && npm run build:web",
+    "build:web": "node scripts/build-frontend.mjs",
+    "watch:web": "node scripts/build-frontend.mjs --watch",
+    "seed-demo": "tsx backend/scripts/seed-demo.ts",
+    "reset-demo": "tsx backend/scripts/reset-demo.ts",
+    "test": "tsx --test tests/*.test.ts",
+    "eval": "tsx scripts/run-eval.ts",
+    "test:foundry": "tsx scripts/test-foundry.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "lint": "prettier --check \"{backend,frontend,scripts,tests}/**/*.{ts,tsx,mjs}\"",
+    "format": "prettier --write \"{backend,frontend,scripts,tests}/**/*.{ts,tsx,mjs}\"",
+    "typecheck:web": "tsc -p tsconfig.web.json --noEmit",
+    "db:migrate": "tsx backend/scripts/db-migrate.ts",
+    "db:status": "tsx backend/scripts/db-status.ts",
+    "db:import-sqlite": "tsx backend/scripts/db-import-sqlite.ts",
+    "search:validate": "tsx backend/scripts/search.ts validate",
+    "search:status": "tsx backend/scripts/search.ts status",
+    "search:index": "tsx backend/scripts/search.ts index",
+    "search:reindex": "tsx backend/scripts/search.ts reindex",
+    "storage:status": "tsx backend/scripts/storage.ts status",
+    "storage:validate": "tsx backend/scripts/storage.ts validate",
+    "storage:init": "tsx backend/scripts/storage.ts init"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "dependencies": {
+    "@azure/msal-browser": "^4.5.0",
+    "@types/pg": "^8.23.1",
+    "pg": "^8.23.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "esbuild": "^0.24.2",
+    "prettier": "^3.4.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}

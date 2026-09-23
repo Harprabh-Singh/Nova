@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# NOVA - local development launcher (LOCAL_MODE only).
+#
+#   ./start-dev            build the web bundle, seed the demo tenant, start the server
+#   ./start-dev --no-seed  skip seeding (database is left untouched)
+#
+# Nothing in this script contacts Azure or any paid API.
+set -euo pipefail
+
+cd "$(dirname "$0")"
+
+if [ ! -f .env ]; then
+  cp .env.example .env
+  echo "created .env from .env.example (LOCAL_MODE defaults)"
+fi
+
+if ! command -v tsx >/dev/null 2>&1; then
+  export PATH="$PWD/node_modules/.bin:$PATH"
+fi
+
+echo "==> building frontend"
+node scripts/build-frontend.mjs
+
+if [ "${1:-}" != "--no-seed" ]; then
+  echo "==> seeding demo tenant (safe to re-run)"
+  npm run --silent seed-demo
+fi
+
+echo "==> ensuring the local HTTPS certificate"
+npm run --silent certs:dev || true
+
+echo "==> starting NOVA"
+exec npm run --silent start

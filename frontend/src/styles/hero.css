@@ -1,0 +1,1289 @@
+/* ==========================================================================
+   NOVA HERO — "The Knowledge Chamber"
+
+   One art-directed environment. The only raster layer is the architectural
+   photograph; typography, artifacts, core, orbitals, annotations and CTA are
+   HTML / CSS / SVG. Pointer parallax arrives as --nvh-mx / --nvh-my (-1..1)
+   and scroll progress as --nvh-scroll (0..1), both written once per frame.
+   ========================================================================== */
+
+.nvh {
+	--nvh-bg: #070908;
+	--nvh-bg-2: #101310;
+	--nvh-bone: #f3f1e9;
+	--nvh-muted: #8d928a;
+	--nvh-tech: #656a63;
+	--nvh-lime: #c8ff3d;
+	--nvh-violet: #8b5cf6;
+	--nvh-display: "Anton", "Archivo Black", Impact, "Arial Narrow", sans-serif;
+	--nvh-editorial: "Instrument Serif", "Cormorant Garamond", Georgia, serif;
+	--nvh-ui: "Inter", system-ui, sans-serif;
+	--nvh-mono: "IBM Plex Mono", ui-monospace, monospace;
+	--nvh-doc-w: clamp(176px, 14.5vw, 210px);
+
+	--nvh-mx: 0;
+	--nvh-my: 0;
+	--nvh-scroll: 0;
+
+	position: relative;
+	min-height: 100svh;
+	background: var(--nvh-bg);
+	color: var(--nvh-bone);
+	overflow: hidden;
+	isolation: isolate;
+}
+
+.nvh *,
+.nvh *::before,
+.nvh *::after { box-sizing: border-box; }
+
+.nvh h1,
+.nvh h2 { margin: 0; }
+.nvh ol,
+.nvh ul,
+.nvh dl,
+.nvh dd { margin: 0; padding: 0; list-style: none; }
+.nvh button { font: inherit; color: inherit; cursor: pointer; }
+.nvh :focus-visible {
+	outline: 1px solid var(--nvh-lime);
+	outline-offset: 4px;
+}
+
+/* ------------------------------------------------------------ environment */
+
+.nvh-env {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+}
+
+.nvh-env-image {
+	position: absolute;
+	inset: -3% -2%;
+	background-image: url("/assets/nova/hero-architecture.webp");
+	background-size: cover;
+	background-position: center center;
+	transform: translate3d(calc(var(--nvh-mx) * -3px), calc(var(--nvh-my) * -2px + var(--nvh-scroll) * -42px), 0)
+		scale(calc(1 + var(--nvh-scroll) * 0.04));
+	opacity: 0;
+	transition: opacity 1.6s linear;
+}
+.nvh.is-in .nvh-env-image { opacity: 1; }
+
+/* Colour grade: cool the architecture, let a little lime pool on the floor. */
+.nvh-env-grade {
+	position: absolute;
+	inset: 0;
+	background:
+		linear-gradient(180deg, rgba(7, 9, 8, 0.82) 0%, rgba(7, 9, 8, 0.24) 34%, rgba(7, 9, 8, 0.58) 72%, rgba(7, 9, 8, 0.94) 100%),
+		radial-gradient(ellipse 46% 34% at 50% 8%, rgba(160, 190, 205, 0.16), transparent 70%),
+		radial-gradient(ellipse 40% 30% at 50% 92%, rgba(200, 255, 61, 0.05), transparent 72%);
+}
+
+.nvh-env-vignette {
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(ellipse 76% 70% at 50% 50%, transparent 38%, rgba(3, 4, 4, 0.78) 100%);
+}
+
+/* Architectural survey grid — CSS, never an image. */
+.nvh-env-grid {
+	position: absolute;
+	inset: 0;
+	background-image:
+		linear-gradient(rgba(243, 241, 233, 0.035) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(243, 241, 233, 0.035) 1px, transparent 1px);
+	background-size: 120px 120px;
+	background-position: center center;
+	-webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 44%, #000 12%, rgba(0, 0, 0, 0.35) 62%, transparent 100%);
+	mask-image: radial-gradient(ellipse 70% 60% at 50% 44%, #000 12%, rgba(0, 0, 0, 0.35) 62%, transparent 100%);
+	opacity: 0;
+	transition: opacity 1.4s linear 0.4s;
+}
+.nvh.is-in .nvh-env-grid { opacity: 1; }
+
+/* Reflected light pooling on the polished floor. */
+.nvh-env-floor {
+	position: absolute;
+	inset: auto 0 0 0;
+	height: 42%;
+	background: linear-gradient(180deg, transparent, rgba(200, 255, 61, 0.035) 62%, rgba(7, 9, 8, 0.6));
+	-webkit-mask-image: radial-gradient(ellipse 40% 100% at 50% 100%, #000, transparent 76%);
+	mask-image: radial-gradient(ellipse 40% 100% at 50% 100%, #000, transparent 76%);
+}
+
+/* Film grain: SVG turbulence, no asset required. */
+.nvh-env-grain {
+	position: absolute;
+	inset: -50%;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+	opacity: 0.16;
+	mix-blend-mode: soft-light;
+	animation: nvh-grain 1.2s steps(3) infinite;
+}
+@keyframes nvh-grain {
+	0% { transform: translate3d(0, 0, 0); }
+	33% { transform: translate3d(-2%, 1%, 0); }
+	66% { transform: translate3d(1%, -2%, 0); }
+	100% { transform: translate3d(0, 0, 0); }
+}
+
+/* ----------------------------------------------------------------- layout */
+
+.nvh-frame {
+	position: relative;
+	z-index: 6;
+	min-height: 100svh;
+	display: grid;
+	/* The stage spans both columns, so the columns must span the FULL frame.
+	   With `auto auto` they packed to the left and the stage inherited that
+	   narrow, brand-width box -- which is why the core and the portal sat off
+	   the true centre (and shifted again whenever the brand was hidden). */
+	grid-template-columns: minmax(0, 1fr) auto;
+	grid-template-rows: auto 1fr auto;
+	align-items: start;
+	gap: clamp(18px, 3vw, 34px);
+	padding: clamp(22px, 3.4vw, 46px) clamp(20px, 4vw, 60px) clamp(16px, 2vw, 26px);
+}
+
+.nvh-stage {
+	grid-column: 1 / -1;
+	width: 100%;
+	grid-row: 2;
+	position: relative;
+	/* The stage must fill the middle band so every absolute layer inside it
+	   resolves against the real composition box, not a collapsed one. */
+	align-self: stretch;
+	min-height: 0;
+	height: 100%;
+}
+
+/* ------------------------------------------------------------------ brand */
+
+.nvh-brand {
+	grid-column: 1;
+	grid-row: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	opacity: 0;
+	transform: translate3d(0, -8px, 0);
+	transition: opacity 0.9s linear 0.25s, transform 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.25s;
+}
+.nvh.is-in .nvh-brand { opacity: 1; transform: none; }
+
+.nvh-brand-row { display: inline-flex; align-items: center; gap: 10px; }
+.nvh-mark { width: 22px; height: 22px; color: var(--nvh-lime); }
+.nvh-wordmark {
+	font-family: var(--nvh-display);
+	font-size: 25px;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	line-height: 1;
+}
+.nvh-brand-sub {
+	font-family: var(--nvh-mono);
+	font-size: 9.5px;
+	line-height: 1.75;
+	letter-spacing: 0.26em;
+	text-transform: uppercase;
+	color: var(--nvh-tech);
+	padding-left: 1px;
+}
+
+/* ----------------------------------------------------------------- status */
+
+.nvh-status {
+	grid-column: 2;
+	grid-row: 1;
+	justify-self: end;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-family: var(--nvh-mono);
+	font-size: 9.5px;
+	letter-spacing: 0.26em;
+	text-transform: uppercase;
+	color: var(--nvh-muted);
+	opacity: 0;
+	transition: opacity 0.9s linear 0.3s;
+}
+.nvh.is-in .nvh-status { opacity: 1; }
+.nvh-status-dot {
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	background: var(--nvh-lime);
+	box-shadow: 0 0 10px rgba(200, 255, 61, 0.7);
+	animation: nvh-pulse 2.6s ease-in-out infinite;
+}
+.nvh-status.is-unknown .nvh-status-dot { background: var(--nvh-tech); box-shadow: none; }
+@keyframes nvh-pulse {
+	0%, 100% { opacity: 1; }
+	50% { opacity: 0.35; }
+}
+
+/* ------------------------------------------------------------- typography */
+
+.nvh-title {
+	position: absolute;
+	left: 50%;
+	/* Far enough down that a three-line block never clips the top edge, far
+	   enough up that it clears the core. */
+	top: 29%;
+	width: min(1180px, 94%);
+	z-index: 4;
+	text-align: center;
+	transform: translate3d(-50%, -50%, 0);
+	pointer-events: none;
+	opacity: calc(1 - var(--nvh-scroll) * 1.15);
+}
+
+.nvh-title-knowledge,
+.nvh-title-line { display: block; }
+
+.nvh-title-knowledge {
+	font-family: var(--nvh-display);
+	font-weight: 400;
+	font-size: clamp(56px, 12.4vw, 208px);
+	line-height: 0.84;
+	letter-spacing: -0.015em;
+	text-transform: uppercase;
+	color: var(--nvh-bone);
+	text-shadow: 0 28px 70px rgba(3, 4, 4, 0.6);
+	opacity: 0;
+	transform: translate3d(0, 24px, 0);
+	filter: blur(10px);
+	transition: opacity 1.1s linear 0.5s, transform 1.3s cubic-bezier(0.16, 1, 0.3, 1) 0.5s,
+		filter 1.3s linear 0.5s;
+}
+.nvh.is-in .nvh-title-knowledge { opacity: 1; transform: none; filter: none; }
+
+.nvh-title-line {
+	display: flex;
+	align-items: baseline;
+	justify-content: center;
+	gap: clamp(10px, 1.6vw, 28px);
+	margin-top: clamp(2px, 0.6vw, 10px);
+}
+
+.nvh-title-into,
+.nvh-title-action {
+	font-family: var(--nvh-editorial);
+	font-style: italic;
+	font-weight: 400;
+	opacity: 0;
+	transform: translate3d(0, 18px, 0);
+	filter: blur(8px);
+	transition: opacity 1s linear, transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), filter 1.2s linear;
+}
+.nvh-title-into {
+	font-size: clamp(24px, 4vw, 70px);
+	line-height: 1;
+	color: var(--nvh-muted);
+	transition-delay: 0.7s;
+}
+.nvh-title-action {
+	font-size: clamp(54px, 10.4vw, 176px);
+	line-height: 0.86;
+	letter-spacing: -0.02em;
+	color: var(--nvh-lime);
+	text-shadow: 0 0 60px rgba(200, 255, 61, 0.14);
+	transition-delay: 0.85s;
+}
+.nvh.is-in .nvh-title-into,
+.nvh.is-in .nvh-title-action { opacity: 1; transform: none; filter: none; }
+
+/* --------------------------------------------------------- knowledge core */
+
+.nvh-core {
+	position: absolute;
+	left: 50%;
+	/* Pushed lower as requested to move the model down. */
+	top: 75%;
+	width: clamp(130px, 13vw, 186px);
+	aspect-ratio: 1;
+	z-index: 3;
+	transform: translate3d(calc(-50% + var(--nvh-mx) * 6px), calc(-50% + var(--nvh-my) * 5px - var(--nvh-scroll) * 60px), 0);
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 1.2s linear 1s;
+	will-change: transform;
+}
+.nvh.is-in .nvh-core { opacity: 1; }
+
+.nvh-core-surface {
+	position: absolute;
+	inset: 14%;
+	border-radius: 50%;
+	background:
+		radial-gradient(circle at 34% 26%, rgba(200, 255, 61, 0.9) 0%, rgba(90, 108, 40, 0.5) 13%, #191c15 44%, #060705 100%),
+		radial-gradient(circle at 70% 78%, rgba(139, 92, 246, 0.16), transparent 52%);
+	box-shadow:
+		inset 0 0 30px rgba(0, 0, 0, 0.9),
+		0 0 46px rgba(200, 255, 61, 0.12),
+		0 26px 50px rgba(0, 0, 0, 0.7);
+	overflow: hidden;
+}
+.nvh-core-facet {
+	position: absolute;
+	inset: 0;
+	background: conic-gradient(from 210deg, rgba(243, 241, 233, 0.1), transparent 28%, rgba(0, 0, 0, 0.5) 62%, transparent 92%);
+	mix-blend-mode: overlay;
+}
+.nvh-core-seam {
+	position: absolute;
+	left: 8%;
+	right: 8%;
+	top: 52%;
+	height: 1px;
+	background: linear-gradient(90deg, transparent, rgba(200, 255, 61, 0.55), transparent);
+}
+.nvh-core-glow {
+	position: absolute;
+	inset: -46%;
+	background: radial-gradient(circle, rgba(200, 255, 61, 0.14), transparent 62%);
+	animation: nvh-breathe 7s ease-in-out infinite;
+}
+/* Contact shadow so the core reads as floating above the floor. */
+.nvh-core-shadow {
+	position: absolute;
+	left: 12%;
+	right: 12%;
+	bottom: -16%;
+	height: 16%;
+	background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.75), transparent 72%);
+	filter: blur(4px);
+}
+@keyframes nvh-breathe {
+	0%, 100% { opacity: 0.7; transform: scale(1); }
+	50% { opacity: 1; transform: scale(1.08); }
+}
+
+.nvh-core-rings { position: absolute; inset: -58%; overflow: visible; pointer-events: none; }
+.nvh-core-ring { fill: none; stroke-width: 1; transform-origin: 200px 200px; will-change: transform; pointer-events: none; }
+.nvh-core-ring.r1 { stroke: rgba(200, 255, 61, 0.38); animation: nvh-spin 20s linear infinite; }
+.nvh-core-ring.r2 { stroke: rgba(243, 241, 233, 0.14); animation: nvh-spin 30s linear infinite reverse; }
+.nvh-core-ring.r3 { stroke: rgba(139, 92, 246, 0.2); animation: nvh-spin 40s linear infinite; }
+@keyframes nvh-spin {
+	from { transform: rotate(0deg); }
+	to { transform: rotate(360deg); }
+}
+
+/* --------------------------------------------------------- orbital system */
+
+.nvh-layer-orbits {
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 1.6s linear 1.4s;
+	transform: translate3d(0, calc(var(--nvh-scroll) * -40px), 0);
+}
+.nvh.is-in .nvh-layer-orbits { opacity: 1; }
+
+.nvh-orbits { width: 100%; height: 100%; }
+.nvh-orbit { fill: none; stroke-width: 1; }
+.nvh-orbit.lime { stroke: rgba(200, 255, 61, 0.26); }
+.nvh-orbit.bone { stroke: rgba(243, 241, 233, 0.12); }
+.nvh-orbit.violet { stroke: rgba(139, 92, 246, 0.16); }
+.nvh-orbit-node.lime { fill: var(--nvh-lime); }
+.nvh-orbit-node.bone { fill: rgba(243, 241, 233, 0.5); }
+.nvh-orbit-node.violet { fill: rgba(139, 92, 246, 0.6); }
+.nvh-orbit-tick { fill: rgba(200, 255, 61, 0.45); }
+.nvh-orbit-guide { stroke: rgba(243, 241, 233, 0.08); stroke-width: 1; stroke-dasharray: 2 7; }
+
+.nvh-orbit-group { transform-origin: 720px 600px; }
+.nvh-orbit-group.o1 { animation: nvh-spin 22s linear infinite; }
+.nvh-orbit-group.o2 { animation: nvh-spin 34s linear infinite reverse; }
+.nvh-orbit-group.o3 { animation: nvh-spin 17s linear infinite; }
+
+/* ------------------------------------------------------ document artifacts */
+
+.nvh-docs { position: absolute; inset: 0; z-index: 5; }
+
+.nvh-doc {
+	position: absolute;
+	width: var(--nvh-doc-w);
+	padding: 13px 14px 11px;
+	border: 1px solid rgba(243, 241, 233, 0.16);
+	border-radius: 2px;
+	background: linear-gradient(154deg, rgba(23, 26, 23, 0.72), rgba(9, 11, 9, 0.62));
+	backdrop-filter: blur(6px);
+	box-shadow: 0 22px 44px rgba(0, 0, 0, 0.55);
+	color: var(--nvh-bone);
+	transform: rotate(var(--doc-rotation));
+	opacity: 0;
+	transition: opacity 1s linear, border-color 0.5s linear, box-shadow 0.5s linear;
+}
+/* Paper tooth. */
+.nvh-doc::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23p)' opacity='0.5'/%3E%3C/svg%3E");
+	opacity: 0.07;
+	mix-blend-mode: overlay;
+}
+.nvh.is-in .nvh-doc { opacity: 1; animation: nvh-drift var(--doc-drift) ease-in-out infinite; }
+
+.nvh-doc-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 10px;
+	font-family: var(--nvh-mono);
+	font-size: 8.5px;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+}
+.nvh-doc-type { color: var(--nvh-bone); }
+.nvh-doc-state { color: var(--nvh-tech); }
+
+.nvh-doc-title {
+	margin-top: 12px;
+	font-family: var(--nvh-ui);
+	font-size: 14.5px;
+	font-weight: 500;
+	letter-spacing: -0.01em;
+	line-height: 1.25;
+}
+/* Body copy stand-in: hairline rules, not fake screenshot text. */
+.nvh-doc-rules {
+	display: block;
+	margin-top: 11px;
+	height: 22px;
+	background: repeating-linear-gradient(to bottom, rgba(243, 241, 233, 0.16) 0 1px, transparent 1px 7px);
+}
+.nvh-doc-meta {
+	margin-top: 11px;
+	font-family: var(--nvh-mono);
+	font-size: 8.5px;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: var(--nvh-muted);
+}
+
+.nvh-doc.is-cited { border-color: rgba(200, 255, 61, 0.42); }
+.nvh-doc.is-cited .nvh-doc-type,
+.nvh-doc.is-cited .nvh-doc-state { color: var(--nvh-lime); }
+
+/* Depth layers: nearer artifacts are larger, brighter and unblurred. */
+.nvh-doc.depth-1 { z-index: 3; }
+.nvh-doc.depth-2 { z-index: 2; scale: 0.9; filter: blur(0.4px); }
+.nvh-doc.depth-3 { z-index: 1; scale: 0.82; filter: blur(0.9px); }
+.nvh.is-in .nvh-doc.depth-2 { opacity: 0.86; }
+.nvh.is-in .nvh-doc.depth-3 { opacity: 0.66; }
+
+.nvh-doc.slot-leftTop { left: 1%; top: 6%; transition-delay: 1.2s; }
+.nvh-doc.slot-leftBottom { left: 6%; top: 52%; transition-delay: 1.3s; }
+.nvh-doc.slot-rightTop { right: 2%; top: 10%; transition-delay: 1.25s; }
+.nvh-doc.slot-rightBottom { right: 6%; top: 55%; transition-delay: 1.35s; }
+
+@keyframes nvh-drift {
+	0%, 100% { translate: 0 0; }
+	50% { translate: 0 -7px; }
+}
+
+.nvh-doc:hover {
+	border-color: rgba(243, 241, 233, 0.42);
+	box-shadow: 0 30px 60px rgba(0, 0, 0, 0.62);
+}
+.nvh-doc:hover .nvh-doc-meta { color: var(--nvh-bone); }
+
+/* ------------------------------------------------------------ annotations */
+
+.nvh-pipeline {
+	/* Sits above the display line as a survey caption, never across it. */
+	position: absolute;
+	left: 50%;
+	top: 0;
+	z-index: 4;
+	display: flex;
+	gap: clamp(18px, 3.4vw, 54px);
+	transform: translate3d(calc(-50% + var(--nvh-mx) * 3px), 0, 0);
+	font-family: var(--nvh-mono);
+	font-size: 9.5px;
+	letter-spacing: 0.26em;
+	text-transform: uppercase;
+	opacity: 0;
+	transition: opacity 1.2s linear 1.8s;
+}
+.nvh.is-in .nvh-pipeline { opacity: 1; }
+.nvh-pipeline li { display: inline-flex; align-items: center; gap: 7px; }
+.nvh-pipeline-no { color: var(--nvh-lime); }
+.nvh-pipeline-slash { color: var(--nvh-tech); }
+.nvh-pipeline-label { color: var(--nvh-muted); }
+
+.nvh-annot {
+	position: absolute;
+	z-index: 4;
+	font-family: var(--nvh-mono);
+	font-size: 9px;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+	opacity: 0;
+	transition: opacity 1.2s linear 1.9s;
+}
+.nvh.is-in .nvh-annot { opacity: 1; }
+
+.nvh-annot-tenant {
+	left: 0;
+	bottom: 6%;
+	display: grid;
+	gap: 7px;
+	padding-left: 13px;
+	border-left: 1px solid rgba(243, 241, 233, 0.2);
+}
+.nvh-annot-key { color: var(--nvh-tech); }
+.nvh-annot-value { color: var(--nvh-bone); letter-spacing: 0.18em; }
+
+.nvh-annot-system {
+	right: 0;
+	bottom: 6%;
+	display: grid;
+	gap: 7px;
+	text-align: right;
+	padding-right: 13px;
+	border-right: 1px solid rgba(243, 241, 233, 0.2);
+}
+.nvh-annot-system > div { display: flex; gap: 8px; justify-content: flex-end; }
+.nvh-annot-system dt { color: var(--nvh-tech); }
+.nvh-annot-system dt::after { content: " /"; }
+.nvh-annot-system dd { color: var(--nvh-muted); }
+
+/* -------------------------------------------------------------------- CTA */
+
+.nvh-actions {
+	position: absolute;
+	left: 50%;
+	bottom: clamp(6px, 1.6vh, 24px);
+	z-index: 7;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 16px;
+	transform: translateX(-50%);
+	opacity: 0;
+	transition: opacity 1s linear 2s;
+}
+.nvh.is-in .nvh-actions { opacity: 1; }
+
+.nvh-portal {
+	position: relative;
+	padding: 10px 22px;
+	border: 1px solid rgba(243, 241, 233, 0.3);
+	border-radius: 3px;
+	background: rgba(7, 9, 8, 0.55);
+	display: inline-flex;
+	align-items: center;
+	gap: 12px;
+	cursor: pointer;
+	pointer-events: auto;
+	transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s linear, border-color 0.4s linear;
+}
+/* Hide the old circular rings — replaced by the rect border above. */
+.nvh-portal-text {
+	display: flex;
+	align-items: baseline;
+	gap: 6px;
+	font-family: var(--nvh-mono);
+	font-size: 9.5px;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	line-height: 1.2;
+}
+.nvh-portal-line.strong { color: var(--nvh-bone); }
+.nvh-portal-line:not(.strong) { color: var(--nvh-muted); }
+.nvh-portal-arrow {
+	font-size: 11px;
+	color: var(--nvh-lime);
+	transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nvh-portal:hover { border-color: rgba(200, 255, 61, 0.6); box-shadow: 0 0 28px rgba(200, 255, 61, 0.1); transform: translateY(-2px); }
+.nvh-portal:hover .nvh-portal-arrow { transform: translateX(5px); }
+
+.nvh-actions-secondary {
+	display: flex;
+	align-items: center;
+	gap: clamp(14px, 2vw, 26px);
+	font-family: var(--nvh-mono);
+	font-size: 9px;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+}
+.nvh-onboard,
+.nvh-scrollcue {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	padding: 8px 2px;
+	border: 0;
+	background: none;
+	font: inherit;
+	color: var(--nvh-muted);
+	transition: color 0.4s linear;
+}
+.nvh-onboard:hover,
+.nvh-scrollcue:hover { color: var(--nvh-bone); }
+.nvh-onboard-rule {
+	width: 26px;
+	height: 1px;
+	background: currentColor;
+	transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nvh-onboard:hover .nvh-onboard-rule { width: 40px; background: var(--nvh-lime); }
+.nvh-scrollcue-arrow { animation: nvh-nudge 2.8s ease-in-out infinite; }
+@keyframes nvh-nudge {
+	0%, 100% { transform: translateY(0); opacity: 0.6; }
+	50% { transform: translateY(4px); opacity: 1; }
+}
+
+/* ------------------------------------------------------------ bottom strip */
+
+.nvh-strip {
+	grid-column: 1 / -1;
+	grid-row: 3;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 16px 28px;
+	flex-wrap: wrap;
+	padding-top: 13px;
+	border-top: 1px solid rgba(243, 241, 233, 0.1);
+	font-family: var(--nvh-mono);
+	font-size: 9px;
+	letter-spacing: 0.26em;
+	text-transform: uppercase;
+	opacity: 0;
+	transition: opacity 1.1s linear 2.1s;
+}
+.nvh.is-in .nvh-strip { opacity: 1; }
+.nvh-strip-list { display: flex; flex-wrap: wrap; gap: 10px 14px; color: var(--nvh-bone); }
+.nvh-strip-list li { display: inline-flex; gap: 14px; }
+.nvh-strip-sep { color: var(--nvh-tech); }
+.nvh-strip-note {
+	font-size: 8.5px;
+	letter-spacing: 0.14em;
+	text-transform: none;
+	color: var(--nvh-tech);
+}
+
+/* ------------------------------------------------------------- responsive */
+
+/* Tablet: fewer artifacts, tighter annotations. */
+@media (max-width: 1080px) {
+	.nvh-doc.depth-3 { display: none; }
+	.nvh-doc.slot-leftTop { left: -1%; top: 3%; }
+	.nvh-pipeline { gap: 18px; font-size: 8.5px; letter-spacing: 0.18em; }
+	.nvh-core { top: 56%; }
+}
+
+@media (max-width: 860px) {
+	.nvh-doc.depth-2 { display: none; }
+	.nvh-annot-system { display: none; }
+}
+
+/* Mobile: a different composition, not a shrunken desktop. */
+@media (max-width: 720px) {
+	.nvh-env-image {
+		background-image: url("/assets/nova/hero-architecture-mobile.webp");
+	}
+	.nvh-frame {
+		grid-template-columns: 1fr;
+		grid-template-rows: auto auto 1fr auto;
+		padding: 22px 20px 18px;
+		gap: 14px;
+	}
+	.nvh-brand { grid-column: 1; grid-row: 1; }
+	.nvh-status { grid-column: 1; grid-row: 2; justify-self: start; }
+	.nvh-stage { grid-column: 1; grid-row: 3; display: flex; flex-direction: column; align-items: center; }
+
+	.nvh-title {
+		position: static;
+		width: 100%;
+		transform: none;
+		margin-top: clamp(14px, 5vw, 32px);
+	}
+	.nvh-title-knowledge { font-size: clamp(44px, 15.5vw, 74px); }
+	.nvh-title-line { flex-direction: column; align-items: center; gap: 0; }
+	.nvh-title-into { font-size: clamp(20px, 6.4vw, 28px); }
+	.nvh-title-action { font-size: clamp(46px, 16vw, 78px); }
+
+	.nvh-pipeline {
+		position: static;
+		transform: none;
+		margin-top: 18px;
+		flex-wrap: wrap;
+		justify-content: center;
+		gap: 10px 16px;
+		font-size: 8px;
+	}
+
+	.nvh-core { position: static; margin: 20px 0 4px; width: 104px; transform: none; }
+	.nvh-core-rings { inset: -70%; }
+
+	.nvh-docs {
+		position: static;
+		display: flex;
+		gap: 12px;
+		width: 100%;
+		justify-content: center;
+		margin-top: 8px;
+	}
+	.nvh-doc,
+	.nvh-doc.slot-leftTop,
+	.nvh-doc.slot-leftBottom,
+	.nvh-doc.slot-rightTop,
+	.nvh-doc.slot-rightBottom {
+		position: static;
+		width: min(50%, 190px);
+		scale: 1;
+		filter: none;
+	}
+	.nvh-doc.depth-2,
+	.nvh-doc.depth-3 { display: none; }
+	.nvh-doc-rules { display: none; }
+
+	.nvh-annot-tenant,
+	.nvh-annot-system { display: none; }
+
+	.nvh-actions {
+		position: static;
+		transform: none;
+		margin: 22px auto 8px;
+	}
+	.nvh-actions-secondary { flex-direction: column; gap: 6px; }
+	.nvh-strip { grid-row: 4; justify-content: center; text-align: center; }
+	.nvh-strip-note { display: none; }
+	.nvh-env-grid { background-size: 84px 84px; }
+}
+
+/* ---------------------------------------------------------- reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+	.nvh * {
+		animation: none !important;
+		transition-duration: 0.2s !important;
+		transition-delay: 0s !important;
+	}
+	.nvh-env-image,
+	.nvh-core,
+	.nvh-layer-orbits { transform: none !important; }
+	.nvh-title { opacity: 1; }
+}
+
+/* --------------------------------------------- integration with the page */
+
+/* The hero must read as a cinematic opening frame: the landing nav only
+   appears once the visitor has scrolled past it (it gains .solid at y > 40). */
+.lpx-nav:not(.solid) {
+	opacity: 0;
+	pointer-events: none;
+}
+
+/* Hover lift, composed with the artifact's own rotation. */
+.nvh-doc:hover {
+	transform: rotate(var(--doc-rotation)) translateY(-6px) scale(1.02);
+	animation-play-state: paused;
+}
+
+/* ==========================================================================
+   REFINEMENT PASS — orbital system v2, core material, type & artifact polish
+   ========================================================================== */
+
+/* Rings live around the core and fade out before they reach the display type. */
+.nvh-layer-orbits {
+	/* Mask centre must track the orb position (top: 75% of the stage). */
+	-webkit-mask-image: radial-gradient(ellipse 60% 52% at 50% 75%, #000 4%, rgba(0, 0, 0, 0.8) 52%, transparent 88%);
+	mask-image: radial-gradient(ellipse 60% 52% at 50% 75%, #000 4%, rgba(0, 0, 0, 0.8) 52%, transparent 88%);
+}
+
+.nvh-orbits {
+	/* Clipped to the frame: nothing bleeds outside the instrument. */
+	overflow: hidden;
+}
+
+/* A barely perceptible precession keeps the system alive without tumbling. */
+.nvh-orbit-system {
+	transform-origin: 720px 675px;
+	animation: nvh-precess 74s ease-in-out infinite;
+}
+@keyframes nvh-precess {
+	0%,
+	100% {
+		transform: rotate(-1.6deg);
+	}
+	50% {
+		transform: rotate(1.6deg);
+	}
+}
+
+.nvh-orbit {
+	fill: none;
+	stroke-width: 1;
+	vector-effect: non-scaling-stroke;
+}
+.nvh-orbit.lime {
+	stroke: rgba(200, 255, 61, 0.3);
+}
+.nvh-orbit.bone {
+	stroke: rgba(243, 241, 233, 0.13);
+}
+.nvh-orbit.violet {
+	stroke: rgba(139, 92, 246, 0.17);
+}
+
+/* Flowing dashes read as data moving along the path. */
+.nvh-orbit.is-dashed {
+	stroke-dasharray: 3 11;
+	animation: nvh-flow 11s linear infinite;
+}
+@keyframes nvh-flow {
+	to {
+		stroke-dashoffset: -280;
+	}
+}
+
+/* Markers ride the ring instead of the ring spinning. */
+.nvh-orbit-node {
+	offset-rotate: 0deg;
+	animation-name: nvh-travel;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+	will-change: offset-distance;
+}
+@keyframes nvh-travel {
+	from {
+		offset-distance: 0%;
+	}
+	to {
+		offset-distance: 100%;
+	}
+}
+.nvh-orbit-node.lime {
+	fill: var(--nvh-lime);
+	filter: drop-shadow(0 0 6px rgba(200, 255, 61, 0.6));
+}
+.nvh-orbit-node.bone {
+	fill: rgba(243, 241, 233, 0.6);
+}
+.nvh-orbit-node.violet {
+	fill: rgba(139, 92, 246, 0.7);
+}
+
+.nvh-orbit-tick {
+	stroke: rgba(243, 241, 233, 0.16);
+	stroke-width: 1;
+}
+.nvh-orbit-tick.is-major {
+	stroke: rgba(200, 255, 61, 0.34);
+}
+.nvh-orbit-dial .nvh-orbit-guide {
+	fill: none;
+	stroke: rgba(243, 241, 233, 0.07);
+	stroke-width: 1;
+	stroke-dasharray: 1 6;
+}
+
+/* ------------------------------------------------- core: material & light */
+
+/* Volumetric shaft from the skylight down onto the core. */
+.nvh-core::before {
+	content: "";
+	position: absolute;
+	left: 50%;
+	bottom: 48%;
+	width: 150%;
+	height: 460%;
+	transform: translateX(-50%);
+	background: linear-gradient(180deg, rgba(243, 241, 233, 0.05), rgba(200, 255, 61, 0.045) 62%, transparent);
+	clip-path: polygon(40% 0, 60% 0, 100% 100%, 0 100%);
+	filter: blur(12px);
+	z-index: -1;
+}
+/* Light pooling on the polished floor under the core. */
+.nvh-core::after {
+	content: "";
+	position: absolute;
+	left: 2%;
+	right: 2%;
+	top: 98%;
+	height: 58%;
+	background: radial-gradient(ellipse at 50% 0%, rgba(200, 255, 61, 0.1), transparent 72%);
+	filter: blur(7px);
+}
+
+.nvh-core-surface {
+	box-shadow:
+		inset 0 0 34px rgba(0, 0, 0, 0.92),
+		inset -10px -14px 30px rgba(200, 255, 61, 0.06),
+		inset 9px 11px 26px rgba(139, 92, 246, 0.05),
+		0 0 54px rgba(200, 255, 61, 0.13),
+		0 28px 54px rgba(0, 0, 0, 0.72);
+}
+/* Rim light picks out the lower-right edge so the core reads as stone. */
+.nvh-core-surface::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: 50%;
+	background: linear-gradient(202deg, transparent 54%, rgba(243, 241, 233, 0.14) 86%, rgba(243, 241, 233, 0.3) 100%);
+	mix-blend-mode: screen;
+}
+/* Tight specular hit, separate from the broad internal glow. */
+.nvh-core-surface::after {
+	content: "";
+	position: absolute;
+	left: 25%;
+	top: 17%;
+	width: 20%;
+	height: 13%;
+	border-radius: 50%;
+	background: radial-gradient(circle, rgba(255, 255, 255, 0.72), transparent 70%);
+	filter: blur(2px);
+}
+
+/* --------------------------------------------------------- display type */
+
+/* Light falls off down the letterforms, as if printed into the space. */
+.nvh-title-knowledge {
+	background: linear-gradient(180deg, #fffdf5 0%, #efece1 44%, #b7b5ac 100%);
+	-webkit-background-clip: text;
+	background-clip: text;
+	-webkit-text-fill-color: transparent;
+	color: transparent;
+	text-shadow: none;
+	filter: blur(10px) drop-shadow(0 26px 46px rgba(3, 4, 4, 0.62));
+}
+.nvh.is-in .nvh-title-knowledge {
+	filter: blur(0) drop-shadow(0 26px 46px rgba(3, 4, 4, 0.62));
+}
+
+/* ------------------------------------------------------ paper artifacts */
+
+.nvh-doc {
+	background: linear-gradient(154deg, rgba(27, 31, 27, 0.74), rgba(9, 11, 9, 0.58));
+	box-shadow:
+		0 24px 48px rgba(0, 0, 0, 0.6),
+		inset 0 1px 0 rgba(243, 241, 233, 0.07);
+}
+.nvh-doc-head {
+	align-items: baseline;
+}
+.nvh-doc-state {
+	font-size: 8px;
+	white-space: nowrap;
+}
+.nvh-doc-title {
+	font-size: 15px;
+	letter-spacing: -0.012em;
+}
+/* Cited source gets a surveyor's corner bracket rather than a glow. */
+.nvh-doc.is-cited::before {
+	content: "";
+	position: absolute;
+	left: -1px;
+	top: -1px;
+	width: 17px;
+	height: 17px;
+	border-top: 1px solid var(--nvh-lime);
+	border-left: 1px solid var(--nvh-lime);
+}
+
+/* Deepen the side walls so the artifacts sit in architectural shadow. */
+.nvh-env::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(90deg, rgba(3, 4, 4, 0.66), transparent 24%, transparent 76%, rgba(3, 4, 4, 0.66));
+}
+
+/* ------------------------------------------------------------------- CTA */
+
+/* Keep the refinement layer honest about reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+	.nvh-orbit-system,
+	.nvh-orbit.is-dashed,
+	.nvh-orbit-node {
+		animation: none !important;
+	}
+}
+
+/* ==========================================================================
+   PERFORMANCE PASS — keep the art direction, remove the per-frame repaints.
+
+   The scene looked identical before this block, but the browser was
+   re-rasterising several full-screen layers on every frame. The rules below
+   strip the three expensive categories: blend modes over moving content,
+   backdrop-filter, and filter/blur on animated elements. Static softness is
+   re-created with gradients, which cost nothing to composite.
+   ========================================================================== */
+
+/* Isolate the hero so paint work never escapes into the rest of the page. */
+.nvh {
+	contain: layout paint style;
+	isolation: isolate;
+}
+
+/* ---------------------------------------------------------- environment */
+
+/* Only the layers that actually move get promoted to their own layer. */
+.nvh-env-image {
+	will-change: transform;
+	backface-visibility: hidden;
+}
+
+/* Grain was a 4x-viewport layer in soft-light: the single most expensive
+   thing in the scene. Same look from a tight tile at lower opacity with no
+   blend mode, so the animation is a pure composited transform. */
+.nvh-env-grain {
+	inset: -8%;
+	opacity: 0.09;
+	mix-blend-mode: normal;
+	animation-duration: 1.6s;
+	will-change: transform;
+}
+@keyframes nvh-grain {
+	0% { transform: translate3d(0, 0, 0); }
+	33% { transform: translate3d(-1.2%, 0.7%, 0); }
+	66% { transform: translate3d(0.7%, -1.2%, 0); }
+	100% { transform: translate3d(0, 0, 0); }
+}
+
+/* ------------------------------------------------------------------ core */
+
+.nvh-core {
+	will-change: transform;
+}
+
+/* Blend mode over a breathing, parallaxing element forced a full restack. */
+.nvh-core-facet {
+	mix-blend-mode: normal;
+	opacity: 0.5;
+}
+.nvh-core-surface::before {
+	mix-blend-mode: normal;
+	background: linear-gradient(202deg, transparent 56%, rgba(243, 241, 233, 0.1) 86%, rgba(243, 241, 233, 0.22) 100%);
+}
+/* Specular hit: soft edge from the gradient itself instead of a blur filter. */
+.nvh-core-surface::after {
+	filter: none;
+	background: radial-gradient(circle, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0.24) 46%, transparent 72%);
+}
+/* Contact shadow, skylight shaft and floor pool are all soft gradients now. */
+.nvh-core-shadow {
+	filter: none;
+	background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.62) 0%, rgba(0, 0, 0, 0.28) 48%, transparent 76%);
+}
+.nvh-core::before {
+	filter: none;
+	background: linear-gradient(180deg, rgba(243, 241, 233, 0.035), rgba(200, 255, 61, 0.03) 62%, transparent);
+}
+.nvh-core::after {
+	filter: none;
+}
+.nvh-core-glow {
+	will-change: opacity, transform;
+}
+
+/* --------------------------------------------------------- display type */
+
+/* drop-shadow() on 200px glyphs re-rasterised the whole headline during
+   parallax. text-shadow draws from the same glyph outlines for far less. */
+.nvh-title-knowledge {
+	text-shadow: 0 26px 46px rgba(3, 4, 4, 0.62);
+}
+.nvh.is-in .nvh-title-knowledge {
+	filter: none;
+}
+
+/* --------------------------------------------------- document artifacts */
+
+/* backdrop-filter on four drifting cards meant four live blur passes per
+   frame. The gradient is a touch denser to keep the smoked-glass read. */
+.nvh-doc {
+	-webkit-backdrop-filter: none;
+	backdrop-filter: none;
+	background: linear-gradient(154deg, rgba(28, 32, 28, 0.9), rgba(9, 11, 9, 0.82));
+	box-shadow:
+		0 18px 34px rgba(0, 0, 0, 0.55),
+		inset 0 1px 0 rgba(243, 241, 233, 0.07);
+	will-change: transform;
+}
+.nvh-doc::after {
+	mix-blend-mode: normal;
+	opacity: 0.05;
+}
+/* Depth now comes from scale and opacity only — blurring a drifting element
+   forces a repaint every frame for a sub-pixel effect nobody can see. */
+.nvh-doc.depth-2 {
+	filter: none;
+	scale: 0.9;
+}
+.nvh-doc.depth-3 {
+	filter: none;
+	scale: 0.82;
+}
+.nvh.is-in .nvh-doc.depth-2 { opacity: 0.82; }
+.nvh.is-in .nvh-doc.depth-3 { opacity: 0.6; }
+
+/* --------------------------------------------------------- orbital system */
+
+/* The layer is masked, so moving the whole SVG inside it re-composited the
+   mask every frame. The markers alone carry the motion. */
+.nvh-orbit-system {
+	animation: none;
+}
+/* One flowing ring instead of two — stroke-dashoffset is a main-thread paint
+   and the 520px ring was the widest repaint area on the page. */
+.nvh-orbit.is-dashed {
+	animation: none;
+	stroke-dasharray: 3 11;
+}
+.nvh-orbit.violet.is-dashed {
+	animation: nvh-flow 14s linear infinite;
+}
+.nvh-orbit-node {
+	will-change: offset-distance;
+}
+/* The glow on the lime markers was a filter on a moving node. */
+.nvh-orbit-node.lime {
+	filter: none;
+}
+
+/* ------------------------------------------------------------------- CTA */
+
+.nvh-portal {
+	-webkit-backdrop-filter: none;
+	backdrop-filter: none;
+	background: radial-gradient(circle at 50% 50%, rgba(12, 15, 12, 0.72), rgba(7, 9, 8, 0.46));
+}
+
+/* ------------------------------------------------- small-screen budget */
+
+/* Phones get the composition, not the atmospherics. */
+@media (max-width: 720px) {
+	.nvh-env-grain {
+		animation: none;
+		opacity: 0.07;
+	}
+	.nvh-layer-orbits {
+		display: none;
+	}
+	.nvh-doc {
+		box-shadow: 0 14px 26px rgba(0, 0, 0, 0.5);
+	}
+}
+
+/* Once the hero is scrolled past there is nothing to animate. */
+@media (prefers-reduced-motion: reduce) {
+	.nvh-env-grain,
+	.nvh-core-glow,
+	.nvh-doc {
+		will-change: auto;
+	}
+}
+
+/* Set by the IntersectionObserver in NovaHero: the hero is off screen, so
+   stop spending frames on it entirely. */
+.nvh.is-idle *,
+.nvh.is-idle *::before,
+.nvh.is-idle *::after {
+	animation-play-state: paused !important;
+}
+
+/* ==========================================================================
+   HERO -> PROOF RECESSION
+
+   The second half of the continuous shot, written on the hero side. It reads
+   the SAME --nvh-scroll value the hero already publishes (0 at rest, 1 when
+   the hero has been scrolled through), so the chamber starts dimming, the
+   core starts collapsing and the artifacts start handing off BEFORE Section
+   02's own progress begins. The two timelines overlap, which is what removes
+   the seam: there is never a frame where one scene has ended and the next has
+   not started.
+
+   Nothing here uses display:none, opacity snaps or background swaps.
+   ========================================================================== */
+
+.nvh {
+	/* Recession curve: nothing happens for the first third of the hero exit,
+	   then the room gives way. */
+	--nvh-out: clamp(0, (var(--nvh-scroll) - 0.12) / 0.88, 1);
+}
+
+/* KNOWLEDGE drifts up and dissolves into the architecture. */
+.nvh-title-knowledge {
+	transform: translateY(calc(var(--nvh-out) * -74px));
+	opacity: calc(1 - var(--nvh-out) * 0.92);
+}
+
+/* INTO loses weight first... */
+.nvh-title-into {
+	opacity: calc(1 - var(--nvh-out) * 0.96);
+}
+
+/* ...and ACTION compresses rather than fading flat, so the line collapses
+   into the wall instead of switching off. */
+.nvh-title-action {
+	transform: translateY(calc(var(--nvh-out) * -34px)) scaleY(calc(1 - var(--nvh-out) * 0.28));
+	transform-origin: left top;
+	opacity: calc(1 - var(--nvh-out) * 0.88);
+	letter-spacing: calc(var(--nvh-out) * -0.012em);
+}
+
+/* The knowledge core dims and shrinks toward the lime point that Section 02
+   inherits. It is the same light, lowered -- not a different element. */
+.nvh-core {
+	/* The centring offset MUST be re-stated here: this rule wins the cascade
+	   over the base .nvh-core transform, and dropping translate(-50%,-50%) is
+	   what pushed the core right of, and below, the true centre. */
+	transform: translate3d(-50%, -50%, 0) scale(calc(1 - var(--nvh-out) * 0.45)) translateY(calc(var(--nvh-out) * -2vh));
+	opacity: calc(1 - var(--nvh-out) * 0.86);
+}
+.nvh-core-glow {
+	opacity: calc(1 - var(--nvh-out) * 0.9);
+	filter: brightness(calc(1 - var(--nvh-out) * 0.4));
+}
+
+/* The orbital rings begin flattening here, and Section 02's connectors pick
+   the movement up mid-gesture. */
+.nvh-layer-orbits {
+	transform: scaleY(calc(1 - var(--nvh-out) * 0.42)) scaleX(calc(1 + var(--nvh-out) * 0.18));
+	transform-origin: 50% 50%;
+	opacity: calc(1 - var(--nvh-out) * 0.62);
+}
+
+/* The circular demo portal moves down the frame and reduces to a marker. */
+.nvh-actions {
+	/* Same cascade trap as the core: keep the -50% centring offset. */
+	transform: translateX(-50%) translateY(calc(var(--nvh-out) * 46px)) scale(calc(1 - var(--nvh-out) * 0.34));
+	opacity: calc(1 - var(--nvh-out) * 0.8);
+}
+
+/* The reflective floor drains; the grid takes its place as the organising
+   system of the room. */
+.nvh-env-floor { opacity: calc(1 - var(--nvh-out) * 0.7); }
+.nvh-env-grid { opacity: calc(1 + var(--nvh-out) * 0.9); }
+.nvh-env-grade { opacity: calc(1 + var(--nvh-out) * 0.35); }
+
+/* Chrome and marginalia step back so the reader's eye is already travelling
+   toward the proof chamber before it arrives. */
+.nvh-annotations,
+.nvh-bottom-strip,
+.nvh-brand,
+.nvh-status {
+	opacity: calc(1 - var(--nvh-out) * 0.8);
+}
+
+/* The hero never dissolves to an empty room before the next chapter starts:
+   the orbit is still stretching and the artifacts are still travelling at the
+   moment Section 02's stage becomes sticky. Nothing is ever fully removed. */
+
+@media (prefers-reduced-motion: reduce) {
+	.nvh { --nvh-out: 0; }
+}

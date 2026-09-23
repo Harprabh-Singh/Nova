@@ -1,0 +1,205 @@
+/* ==========================================================================
+   NOVA - console motion stylesheet
+   Paired with src/lib/console-motion.tsx. Class names are namespaced `cm-`
+   so they never collide with anim.css (`an-`), motion-extra.css (`mo-`),
+   chat (`cxx-`) or the console layout (`wx-`).
+   ========================================================================== */
+
+/* staggered row entrance -------------------------------------------------- */
+.cm-row {
+	opacity: 0;
+	transform: translate3d(0, 14px, 0);
+	transition:
+		opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+		transform 0.62s cubic-bezier(0.16, 1, 0.3, 1);
+	will-change: opacity, transform;
+}
+.cm-row.is-in {
+	opacity: 1;
+	transform: none;
+}
+
+/* reading-band lighting --------------------------------------------------- */
+.cm-lit {
+	--lit: 0.42;
+	opacity: calc(0.52 + var(--lit) * 0.48);
+	transition: opacity 0.18s linear;
+}
+.cm-lit::after {
+	content: "";
+	position: absolute;
+	inset: 0 auto 0 0;
+	width: 2px;
+	background: var(--wx-acid, #c8ff00);
+	opacity: calc(var(--lit) * var(--lit) * 0.9);
+	transform: scaleY(var(--lit));
+	transform-origin: center;
+	transition:
+		opacity 0.2s linear,
+		transform 0.2s linear;
+	pointer-events: none;
+}
+
+/* sliding tab indicator --------------------------------------------------- */
+.cm-tabs {
+	position: relative;
+	--ix: 0px;
+	--iw: 0px;
+}
+.cm-tabs::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	height: 2px;
+	width: var(--iw);
+	background: var(--wx-acid, #c8ff00);
+	transform: translate3d(var(--ix), 0, 0);
+	transition:
+		transform 0.46s cubic-bezier(0.22, 1.4, 0.36, 1),
+		width 0.46s cubic-bezier(0.22, 1.4, 0.36, 1);
+	will-change: transform, width;
+}
+
+/* drag pan ---------------------------------------------------------------- */
+.cm-pan {
+	overflow-x: auto;
+	scrollbar-width: none;
+	cursor: grab;
+}
+.cm-pan::-webkit-scrollbar {
+	display: none;
+}
+.cm-pan.is-dragging {
+	cursor: grabbing;
+	user-select: none;
+}
+.cm-pan.is-dragging * {
+	pointer-events: none;
+}
+
+/* clip wipe / curtain ----------------------------------------------------- */
+.cm-wipe {
+	animation: cm-wipe 0.52s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.cm-curtain {
+	animation: cm-curtain 0.46s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* press bloom ------------------------------------------------------------- */
+.cm-bloom {
+	position: relative;
+	overflow: hidden;
+	--px: 50%;
+	--py: 50%;
+}
+.cm-bloom::after {
+	content: "";
+	position: absolute;
+	left: var(--px);
+	top: var(--py);
+	width: 6px;
+	height: 6px;
+	margin: -3px 0 0 -3px;
+	border-radius: 50%;
+	background: currentColor;
+	opacity: 0;
+	pointer-events: none;
+}
+.cm-bloom.is-bloom::after {
+	animation: cm-bloom 0.52s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* printed log lines ------------------------------------------------------- */
+.cm-print {
+	animation: cm-print 0.3s steps(6, end) both;
+}
+
+@keyframes cm-wipe {
+	from {
+		clip-path: inset(0 0 100% 0);
+		opacity: 0;
+	}
+	to {
+		clip-path: inset(0 0 0 0);
+		opacity: 1;
+	}
+}
+@keyframes cm-curtain {
+	from {
+		clip-path: inset(0 100% 0 0);
+	}
+	to {
+		clip-path: inset(0 0 0 0);
+	}
+}
+@keyframes cm-bloom {
+	from {
+		opacity: 0.34;
+		transform: scale(1);
+	}
+	to {
+		opacity: 0;
+		transform: scale(46);
+	}
+}
+@keyframes cm-print {
+	from {
+		opacity: 0;
+		transform: translate3d(-6px, 0, 0);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+@keyframes cm-sweep {
+	from {
+		transform: translate3d(0, -100%, 0);
+	}
+	to {
+		transform: translate3d(0, 900%, 0);
+	}
+}
+@keyframes cm-shimmer {
+	from {
+		background-position: -180% 0;
+	}
+	to {
+		background-position: 180% 0;
+	}
+}
+@keyframes cm-settle {
+	from {
+		opacity: 0;
+		transform: translate3d(0, -8px, 0);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.cm-row,
+	.cm-row.is-in {
+		opacity: 1;
+		transform: none;
+		transition: none;
+	}
+	.cm-lit {
+		opacity: 1;
+	}
+	.cm-lit::after {
+		display: none;
+	}
+	.cm-tabs::after {
+		transition: none;
+	}
+	.cm-wipe,
+	.cm-curtain,
+	.cm-print,
+	.cm-bloom.is-bloom::after {
+		animation: none;
+	}
+}

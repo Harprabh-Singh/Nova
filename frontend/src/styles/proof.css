@@ -1,0 +1,1089 @@
+/* ==========================================================================
+   NOVA SECTION 02 -- "The Proof Chamber"
+
+   One continuous shot with the hero. The section is a tall scroll track with a
+   single sticky stage; every layer reads the same normalised progress value
+   --pf (0 hero, 1 section established) that the scroll hook writes once per
+   frame. Nothing is display:none'd and no background is swapped: the room, the
+   floor, the grid, the artifacts and the orbitals are all interpolated.
+
+   No WebGL, no canvas, no 3D. CSS + SVG only.
+   ========================================================================== */
+
+.pfc {
+	--pf: 0;
+
+	/* Sub-timelines carved out of the master progress. Each one is a clamped
+	   remap, which is how ten different layers stay in one shot. */
+	/* Retimed so the timelines OVERLAP. There is no window in which the hero
+	   has gone and the proof has not yet arrived -- the artifacts are already
+	   travelling and the orbit is already stretching while the hero type is
+	   still legible, which is what kills the empty-room hold. */
+	/* The track now covers the hero as well, so the first slice of the
+	   timeline is the hero simply being read. Everything after it is one
+	   continuous transformation of the SAME elements. */
+	--pf-hero: clamp(0, (var(--pf) - 0.05) / 0.4, 1); /* hero recedes in frame */
+	--pf-carry: 1; /* nothing hands off any more: one artifact set */
+	--pf-travel: clamp(0, (var(--pf) - 0.08) / 0.42, 1); /* artifacts move */
+	--pf-morph: clamp(0, (var(--pf) - 0.14) / 0.42, 1); /* orbit -> trace */
+	--pf-room: clamp(0, (var(--pf) - 0.03) / 0.62, 1); /* light falls away */
+	--pf-chapter: clamp(0, (var(--pf) - 0.3) / 0.12, 1); /* 02 / THE PROBLEM */
+	--pf-type: clamp(0, (var(--pf) - 0.36) / 0.24, 1); /* proof typography */
+	--pf-panel: clamp(0, (var(--pf) - 0.46) / 0.2, 1); /* ANSWER TRACE */
+	--pf-settle: clamp(0, (var(--pf) - 0.72) / 0.2, 1); /* fully readable */
+
+	--pfc-bg: #070908;
+	--pfc-bone: #f3f1e9;
+	--pfc-muted: #777c75;
+	--pfc-tech: #5b615a;
+	--pfc-lime: #c8ff3d;
+	--pfc-pink: #ff2387;
+	--pfc-violet: #8b5cf6;
+	--pfc-line: rgba(243, 241, 233, 0.14);
+	--pfc-display: "Anton", "Archivo Black", Impact, "Arial Narrow", sans-serif;
+	--pfc-editorial: "Instrument Serif", "Cormorant Garamond", Georgia, serif;
+	--pfc-ui: "Inter", system-ui, sans-serif;
+	--pfc-mono: "IBM Plex Mono", ui-monospace, monospace;
+	--pfc-ease: cubic-bezier(0.16, 1, 0.3, 1);
+
+	position: relative;
+	/* The length of the shot. Long enough that nothing snaps, short enough
+	   that the reader is never trapped. */
+	height: 340vh;
+	background: var(--pfc-bg);
+	color: var(--pfc-bone);
+	/* No seam with the hero: the first pixel of this section is the last
+	   pixel of the hero's grade. */
+	margin-top: -1px;
+}
+
+.pfc *,
+.pfc *::before,
+.pfc *::after { box-sizing: border-box; }
+
+.pfc h2 { margin: 0; }
+.pfc ol,
+.pfc ul { margin: 0; padding: 0; list-style: none; }
+.pfc button { font: inherit; color: inherit; cursor: pointer; }
+.pfc :focus-visible {
+	outline: 1px solid var(--pfc-lime);
+	outline-offset: 5px;
+}
+
+.pfc-stage {
+	position: sticky;
+	top: 0;
+	height: 100svh;
+	overflow: hidden;
+	isolation: isolate;
+	/* Paint containment keeps the scroll-driven work inside the stage. */
+	contain: paint;
+}
+
+/* -------------------------------------------------- the room, continuing */
+
+/* ---------------------------------------------------- the hero, as a layer */
+
+/* The hero is mounted INSIDE the sticky stage. It never scrolls out of the
+   frame; it recedes within it, on this scene's clock. That is the difference
+   between "the hero left and a copy continued" and "the hero transformed". */
+.pfc-hero {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+}
+.pfc .nvh.is-pinned {
+	--nvh-out: var(--pf-hero);
+	position: absolute;
+	inset: 0;
+	min-height: 0;
+	height: 100%;
+}
+/* The hero's internal grid must still fill (and centre against) the pinned
+   stage, otherwise the composition collapses upward and reads off-centre. */
+.pfc .nvh.is-pinned .nvh-frame {
+	min-height: 100%;
+	height: 100%;
+}
+/* The page's fixed navigation already carries the NOVA wordmark over this
+   scene, so the hero must not print a second one underneath it. */
+.pfc .nvh.is-pinned .nvh-brand { display: none; }
+/* Once the room has moved on, the hero's controls stop catching the pointer
+   even though its architecture is still on screen. */
+.pfc-hero.is-past,
+.pfc-hero.is-past * { pointer-events: none; }
+
+.pfc-env {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	/* Rises through the hero's own plate rather than replacing it: same
+	   photograph, deeper grade, pushed in. */
+	opacity: clamp(0, (var(--pf) - 0.02) / 0.34, 1);
+}
+
+/* THE SAME photograph as the hero. We push in and tilt down instead of
+   cutting to a different plate: that is the whole trick. */
+.pfc-env-image {
+	position: absolute;
+	inset: -4% -2%;
+	background-image: url("/assets/nova/hero-architecture.webp");
+	background-size: cover;
+	background-position: 50% calc(50% - var(--pf-room) * 13%);
+	transform: scale(calc(1.04 + var(--pf-room) * 0.05));
+	filter: brightness(calc(1 - var(--pf-room) * 0.46)) contrast(calc(1 + var(--pf-room) * 0.12))
+		saturate(calc(1 - var(--pf-room) * 0.3));
+}
+
+/* The grade deepens until the architecture is nearly an editorial black. */
+.pfc-env-grade {
+	position: absolute;
+	inset: 0;
+	background:
+		linear-gradient(180deg, rgba(7, 9, 8, 0.96) 0%, rgba(7, 9, 8, 0.5) 26%, rgba(7, 9, 8, 0.72) 68%, rgba(7, 9, 8, 0.98) 100%),
+		radial-gradient(ellipse 52% 40% at 62% 18%, rgba(150, 178, 196, 0.1), transparent 72%);
+	opacity: calc(0.72 + var(--pf-room) * 0.28);
+}
+
+.pfc-env-vignette {
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(ellipse 74% 68% at 46% 48%, transparent 30%, rgba(3, 4, 4, 0.92) 100%);
+	opacity: calc(0.6 + var(--pf-room) * 0.4);
+}
+
+/* The hero's survey grid, taking over as the photograph recedes. */
+.pfc-env-grid {
+	position: absolute;
+	inset: 0;
+	background-image:
+		linear-gradient(rgba(243, 241, 233, 0.05) 1px, transparent 1px),
+		linear-gradient(90deg, rgba(243, 241, 233, 0.05) 1px, transparent 1px);
+	background-size: 120px 120px;
+	background-position: center calc(50% + var(--pf-room) * 18px);
+	-webkit-mask-image: radial-gradient(ellipse 86% 76% at 46% 50%, #000 24%, rgba(0, 0, 0, 0.4) 72%, transparent 100%);
+	mask-image: radial-gradient(ellipse 86% 76% at 46% 50%, #000 24%, rgba(0, 0, 0, 0.4) 72%, transparent 100%);
+	opacity: calc(0.35 + var(--pf-room) * 0.65);
+}
+
+/* The polished floor keeps reflecting, but the lime pool drains out of it. */
+.pfc-env-floor {
+	position: absolute;
+	inset: auto 0 0 0;
+	height: 44%;
+	background: linear-gradient(180deg, transparent, rgba(200, 255, 61, 0.03) 58%, rgba(7, 9, 8, 0.82));
+	-webkit-mask-image: radial-gradient(ellipse 44% 100% at 48% 100%, #000, transparent 74%);
+	mask-image: radial-gradient(ellipse 44% 100% at 48% 100%, #000, transparent 74%);
+	opacity: calc(1 - var(--pf-room) * 0.72);
+}
+
+/* All that is left of the knowledge core: its lime glow, reduced to a point. */
+.pfc-env-core {
+	position: absolute;
+	left: 50%;
+	top: 56%;
+	width: 40vmin;
+	height: 40vmin;
+	margin: -20vmin 0 0 -20vmin;
+	border-radius: 50%;
+	background: radial-gradient(circle, rgba(200, 255, 61, 0.2), transparent 62%);
+	/* The hero owns the core while the hero is legible. This glow only exists
+	   to carry it AFTER the hero's core has shrunk, so it must not sit on top
+	   of it at the start. */
+	opacity: calc(clamp(0, (var(--pf) - 0.12) / 0.2, 1) * (1 - var(--pf-room) * 0.94));
+	transform: scale(calc(1 - var(--pf-room) * 0.5)) translateY(calc(var(--pf-room) * -6vh));
+	display: grid;
+	place-items: center;
+}
+.pfc-env-core-point {
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	background: var(--pfc-lime);
+	box-shadow: 0 0 14px rgba(200, 255, 61, 0.7);
+	opacity: calc(var(--pf-room) * 14);
+}
+
+.pfc-env-grain {
+	position: absolute;
+	inset: -50%;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+	opacity: 0.05;
+	mix-blend-mode: overlay;
+	pointer-events: none;
+}
+
+/* ------------------------------------------ orbitals -> evidence traces */
+
+.pfc-traces {
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+}
+
+.pfc-trace-group { transition: opacity 0.45s var(--pfc-ease); }
+.pfc-trace-group.is-dimmed { opacity: 0.35; }
+
+/* The hero ring: flattened and stretched, never simply faded away. */
+.pfc-orbit {
+	fill: none;
+	stroke: rgba(243, 241, 233, 0.3);
+	stroke-width: 1;
+	transform-box: view-box;
+	transform-origin: 720px 675px;
+	transform:
+		rotate(calc(var(--orbit-tilt) * (1 - var(--pf-morph))))
+		scaleX(calc(1 + var(--pf-morph) * 0.9))
+		scaleY(calc(1 - var(--pf-morph) * 0.965))
+		translateY(calc(var(--pf-morph) * -40px));
+	opacity: calc(var(--pf-travel) * (1 - var(--pf-morph) * 0.92));
+}
+
+/* The same line, arrived: a thin evidence connector into the panel. */
+.pfc-trace {
+	fill: none;
+	stroke-width: 1;
+	stroke-dasharray: 900;
+	stroke-dashoffset: calc(900 - var(--pf-morph) * 900);
+	opacity: calc(var(--pf-morph) * 0.9);
+}
+.pfc-trace-group.is-active .pfc-trace { stroke-width: 1.6; opacity: 1; }
+
+.pfc-trace-node {
+	fill: var(--pfc-lime);
+	opacity: calc(max(0, (var(--pf-morph) - 0.75)) * 4);
+}
+.pfc-trace-group.is-active .pfc-trace-node { r: 4.4; }
+
+.pfc-trace-baseline {
+	stroke: rgba(200, 255, 61, 0.28);
+	stroke-width: 1;
+	stroke-dasharray: 4 7;
+	opacity: calc(var(--pf-morph) * 0.8);
+}
+
+/* ------------------------------------------------------------- the frame */
+
+.pfc-frame {
+	position: relative;
+	z-index: 2;
+	height: 100%;
+	padding: clamp(18px, 3.2vw, 52px) clamp(18px, 4vw, 72px);
+}
+
+/* Chapter marker: an editorial rule + number, not a UI pill. */
+.pfc-chapter {
+	position: absolute;
+	left: clamp(18px, 4vw, 72px);
+	top: clamp(20px, 5vh, 58px);
+	display: flex;
+	align-items: baseline;
+	gap: 14px;
+	padding: 10px 16px 10px 14px;
+	border: 1px solid var(--pfc-line);
+	border-left: 1px solid rgba(200, 255, 61, 0.55);
+	font-family: var(--pfc-mono);
+	font-size: 11px;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+	color: var(--pfc-muted);
+	opacity: var(--pf-chapter);
+	transform: translateY(calc((1 - var(--pf-chapter)) * 14px));
+}
+.pfc-chapter-no {
+	font-family: var(--pfc-display);
+	font-size: 22px;
+	letter-spacing: 0.02em;
+	color: var(--pfc-bone);
+}
+
+/* --------------------------------------------------------- the typography */
+
+/* The statement is not a left column. It is set on the wall plane and is
+   allowed to run under the glazing and across the artifacts -- the panel's
+   blur reads it as something behind glass, which is exactly the relationship
+   we want between the claim and the evidence. */
+.pfc-type {
+	position: absolute;
+	left: clamp(18px, 4vw, 72px);
+	top: clamp(64px, 11vh, 112px);
+	width: min(60vw, 900px);
+	z-index: 2;
+	pointer-events: none;
+}
+/* All heading lines are aligned to the left edge. */
+.pfc-line-nova { margin-left: 0; }
+.pfc-line-proof { margin-left: 0; }
+
+.pfc-heading {
+	font-family: var(--pfc-display);
+	font-weight: 400;
+	line-height: 0.82;
+	text-transform: uppercase;
+	letter-spacing: -0.015em;
+	/* Sized to the viewport, not to the page: the full statement plus the lede
+	   has to sit inside one 100svh frame with nothing running off the edge. */
+	font-size: clamp(34px, 5.6vw, 92px);
+}
+
+.pfc-line {
+	display: block;
+	opacity: var(--pf-type);
+}
+.pfc-line-most { transform: translateY(calc((1 - var(--pf-type)) * 46px)); }
+.pfc-line-guess { transform: translateY(calc((1 - var(--pf-type)) * 62px)); }
+.pfc-line-nova {
+	margin-top: 0.1em;
+	transform: translateY(calc((1 - var(--pf-type)) * 78px));
+}
+.pfc-line-proof {
+	margin-top: 0.1em;
+	font-size: 0.58em;
+	transform: translateY(calc((1 - var(--pf-type)) * 94px));
+}
+
+.pfc-word {
+	display: inline-block;
+	margin-right: 0.22em;
+}
+
+/* GUESS: an abandoned statement. */
+.pfc-guess {
+	position: relative;
+	color: var(--pfc-muted);
+	opacity: 0.62;
+}
+.pfc-strike {
+	position: absolute;
+	left: -2%;
+	top: 52%;
+	width: 104%;
+	height: 0.2em;
+	overflow: visible;
+}
+.pfc-strike path {
+	fill: none;
+	stroke: rgba(243, 241, 233, 0.62);
+	stroke-width: 2.2;
+	stroke-linecap: round;
+	stroke-dasharray: 320;
+	stroke-dashoffset: calc(320 - clamp(0, (var(--pf) - 0.44) / 0.12, 1) * 320);
+}
+
+/* RETRIEVES: printed marker strip, not a SaaS badge. */
+.pfc-retrieves {
+	position: relative;
+	color: #0a0c08;
+	padding: 0 0.12em;
+}
+.pfc-marker {
+	position: absolute;
+	left: -0.04em;
+	right: -0.08em;
+	top: 0.1em;
+	bottom: 0.08em;
+	background: var(--pfc-lime);
+	border-radius: 1px;
+	box-shadow: 0 10px 34px rgba(200, 255, 61, 0.16);
+	transform-origin: left center;
+	transform: scaleX(clamp(0, (var(--pf) - 0.48) / 0.14, 1)) skewX(-0.6deg);
+}
+/* Ink tooth on the strip. */
+.pfc-marker::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='90' height='90'%3E%3Cfilter id='m'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.1' numOctaves='2'/%3E%3C/filter%3E%3Crect width='90' height='90' filter='url(%23m)' opacity='0.5'/%3E%3C/svg%3E");
+	opacity: 0.16;
+	mix-blend-mode: multiply;
+}
+.pfc-retrieves-text { position: relative; }
+
+.pfc-difference { color: var(--pfc-bone); }
+.pfc-is {
+	font-size: 0.56em;
+	color: var(--pfc-muted);
+	font-family: var(--pfc-editorial);
+	text-transform: lowercase;
+}
+.pfc-proof { color: var(--pfc-pink); }
+
+.pfc-lede {
+	max-width: 46ch;
+	margin: clamp(18px, 2.6vh, 30px) 0 0;
+	font-family: var(--pfc-ui);
+	font-size: clamp(13px, 1.05vw, 15px);
+	line-height: 1.62;
+	color: rgba(243, 241, 233, 0.66);
+	opacity: var(--pf-settle);
+	transform: translateY(calc((1 - var(--pf-settle)) * 16px));
+}
+
+
+/* --------------------------------------------- travelling knowledge artifacts */
+
+/* The artifact layer must resolve against the SAME composition box the hero
+   used for its documents (.nvh-stage: the middle band inside the hero frame,
+   below the brand row and above the bottom strip). Resolving against the full
+   stage is what pushed the artifacts up into the NOVA wordmark. */
+.pfc-docs {
+	position: absolute;
+	top: clamp(92px, 13vh, 132px);
+	right: clamp(20px, 4vw, 60px);
+	bottom: clamp(74px, 11vh, 116px);
+	left: clamp(20px, 4vw, 60px);
+	z-index: 3;
+}
+
+/* Position is a live interpolation between the hero coordinate (--fx/--fy)
+   and the evidence coordinate (--tx/--ty). The artifact is never teleported,
+   never cross-faded with a duplicate: it travels. */
+.pfc-doc {
+	position: absolute;
+	left: calc((var(--fx) + (var(--tx) - var(--fx)) * var(--pf-travel)) * 1%);
+	top: calc((var(--fy) + (var(--ty) - var(--fy)) * var(--pf-travel)) * 1%);
+	width: clamp(168px, 13.5vw, 206px);
+	display: flex;
+	flex-direction: column;
+	gap: 7px;
+	padding: 12px 13px 10px;
+	text-align: left;
+	border: 1px solid rgba(243, 241, 233, 0.16);
+	border-radius: 2px;
+	background: linear-gradient(154deg, rgba(23, 26, 23, 0.74), rgba(9, 11, 9, 0.66));
+	/* Cheap to composite: the artifacts move every frame, so no backdrop
+	   filter on them. The tint below does the same job for free. */
+	background-color: rgba(11, 13, 11, 0.72);
+	box-shadow: 0 22px 44px rgba(0, 0, 0, 0.55);
+	will-change: transform, opacity;
+	color: var(--pfc-bone);
+	/* The artifacts are already on screen at their HERO coordinates when the
+	   stage enters, so the hero's copies hand straight over to these ones --
+	   no gap, no reappearance. */
+	opacity: 1;
+	transform: rotate(calc((var(--fr) + (var(--tr) - var(--fr)) * var(--pf-travel)) * 1deg))
+		scale(calc(var(--fs) + (var(--ts) - var(--fs)) * var(--pf-travel)));
+	transition: border-color 0.4s var(--pfc-ease), box-shadow 0.4s var(--pfc-ease), opacity 0.4s var(--pfc-ease);
+}
+/* Same paper tooth as the hero artifact. */
+.pfc-doc::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23p)' opacity='0.5'/%3E%3C/svg%3E");
+	opacity: 0.07;
+	mix-blend-mode: overlay;
+}
+.pfc-doc.is-active {
+	border-color: rgba(200, 255, 61, 0.55);
+	box-shadow: 0 26px 54px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(200, 255, 61, 0.18);
+}
+.pfc-doc.is-dimmed { opacity: 0.45; }
+
+/* The two records that retrieval PULLS IN (the matrix and the live permission
+   row) were never in the hero, so they rise out of the archive edge instead of
+   pretending to have been there all along. */
+.pfc-doc.is-arriving {
+	opacity: calc(var(--pf-morph) * var(--pf-morph));
+}
+
+.pfc-doc-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	font-family: var(--pfc-mono);
+	font-size: 9px;
+	letter-spacing: 0.22em;
+	text-transform: uppercase;
+	color: var(--pfc-tech);
+}
+.pfc-doc-state { color: var(--pfc-lime); }
+.pfc-doc-title {
+	font-family: var(--pfc-editorial);
+	font-size: 17px;
+	line-height: 1.12;
+}
+.pfc-doc-rules {
+	display: block;
+	height: 14px;
+	background-image: repeating-linear-gradient(
+		180deg,
+		rgba(243, 241, 233, 0.16) 0 1px,
+		transparent 1px 5px
+	);
+	opacity: 0.7;
+}
+.pfc-doc-meta {
+	font-family: var(--pfc-mono);
+	font-size: 9px;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--pfc-tech);
+}
+.pfc-doc-ref {
+	position: absolute;
+	top: 10px;
+	right: -26px;
+	font-family: var(--pfc-mono);
+	font-size: 10px;
+	color: var(--pfc-lime);
+	opacity: calc(var(--pf-morph) * 0.9);
+}
+
+/* Artifacts that are not evidence for this question drift back into the room. */
+.pfc-doc-ambient {
+	width: clamp(132px, 10vw, 158px);
+	padding: 10px 11px;
+	opacity: calc(0.92 - var(--pf-room) * 0.46);
+	filter: blur(calc(var(--pf-room) * 1.4px));
+	transform: rotate(-3deg) scale(0.9);
+	box-shadow: none;
+}
+
+/* ----------------------------------------------------- NOVA://ANSWER TRACE */
+
+.pfc-instrument {
+	position: absolute;
+	right: clamp(18px, 4vw, 72px);
+	top: 50%;
+	width: min(44vw, 600px);
+	z-index: 4;
+	transform: translateY(-50%) translateY(calc((1 - var(--pf-panel)) * 42px));
+	opacity: var(--pf-panel);
+}
+
+/* Deliberately not a card: the frame is cut, the head rail runs past the
+   left edge, the evidence enters through it. */
+.pfc-trace-panel {
+	position: relative;
+	display: grid;
+	gap: clamp(12px, 1.6vh, 20px);
+	padding: clamp(18px, 2vw, 28px) clamp(18px, 2.2vw, 30px) clamp(14px, 1.6vw, 22px);
+	/* Not a card. It is the glazing of an architectural bay: the only
+	   edges are the two structural mullions (left column, right reveal),
+	   the fill is the room seen through tinted glass, and there is no drop
+	   shadow, because a pane does not float above the wall it sits in. */
+	border: none;
+	border-right: 1px solid rgba(243, 241, 233, 0.08);
+	background: linear-gradient(168deg, rgba(20, 24, 21, 0.4), rgba(7, 9, 8, 0.62));
+	backdrop-filter: blur(3px) saturate(0.85);
+	box-shadow: none;
+	/* The glazing runs past the panel content, top and bottom, so it reads
+	   as a plane in the building rather than a rectangle on top of it. */
+	-webkit-mask-image: linear-gradient(180deg, transparent, #000 7%, #000 93%, transparent);
+	mask-image: linear-gradient(180deg, transparent, #000 7%, #000 93%, transparent);
+}
+/* Horizontal architectural datum lines that the panel's rows sit on. They
+   extend well past the glazing on both sides and share the grid's rhythm. */
+.pfc-trace-panel::after {
+	content: "";
+	position: absolute;
+	left: -22vw;
+	right: -6vw;
+	top: 0;
+	bottom: 0;
+	pointer-events: none;
+	background-image: repeating-linear-gradient(
+		180deg,
+		rgba(243, 241, 233, 0.07) 0 1px,
+		transparent 1px 120px
+	);
+	-webkit-mask-image: linear-gradient(90deg, transparent, #000 22%, #000 88%, transparent);
+	mask-image: linear-gradient(90deg, transparent, #000 22%, #000 88%, transparent);
+	opacity: var(--pf-room);
+}
+/* The panel's own architectural column, extending beyond the frame. */
+.pfc-trace-panel::before {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: -28px;
+	bottom: -28px;
+	width: 1px;
+	background: linear-gradient(180deg, transparent, rgba(200, 255, 61, 0.5) 18%, rgba(200, 255, 61, 0.5) 82%, transparent);
+}
+
+.pfc-panel-head {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin: 0 -14px 0 -34px;
+	padding: 0 14px 12px 34px;
+	border-bottom: 1px solid var(--pfc-line);
+	font-family: var(--pfc-mono);
+	font-size: 10px;
+	letter-spacing: 0.26em;
+	text-transform: uppercase;
+	color: var(--pfc-muted);
+}
+.pfc-panel-id { color: var(--pfc-bone); }
+.pfc-panel-status {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	color: var(--pfc-lime);
+}
+.pfc-dot {
+	width: 5px;
+	height: 5px;
+	border-radius: 50%;
+	background: var(--pfc-lime);
+	box-shadow: 0 0 10px rgba(200, 255, 61, 0.8);
+}
+
+.pfc-stage-block {
+	display: grid;
+	gap: 8px;
+}
+.pfc-stage-label {
+	font-family: var(--pfc-mono);
+	font-size: 9px;
+	letter-spacing: 0.3em;
+	text-transform: uppercase;
+	color: var(--pfc-tech);
+}
+
+.pfc-query-text {
+	margin: 0;
+	font-family: var(--pfc-editorial);
+	font-size: clamp(18px, 1.7vw, 24px);
+	line-height: 1.24;
+	color: var(--pfc-bone);
+}
+
+/* retrieval register */
+.pfc-rows { display: grid; gap: 6px; }
+.pfc-row {
+	position: relative;
+	display: grid;
+	grid-template-columns: 28px 1fr auto;
+	align-items: center;
+	gap: 12px;
+	padding: 9px 10px;
+	border: 1px solid transparent;
+	border-bottom-color: var(--pfc-line);
+	opacity: 0;
+	transform: translateX(-10px);
+	transition: opacity 0.5s var(--pfc-ease), transform 0.5s var(--pfc-ease), border-color 0.3s linear,
+		background 0.3s linear;
+}
+.pfc-row.is-on { opacity: 1; transform: none; }
+.pfc-row.is-active {
+	border-color: rgba(200, 255, 61, 0.4);
+	background: rgba(200, 255, 61, 0.06);
+}
+.pfc-row-no {
+	font-family: var(--pfc-mono);
+	font-size: 11px;
+	color: var(--pfc-lime);
+}
+.pfc-row-title {
+	display: block;
+	font-family: var(--pfc-ui);
+	font-size: 13px;
+	color: var(--pfc-bone);
+}
+.pfc-row-meta {
+	display: block;
+	margin-top: 2px;
+	font-family: var(--pfc-mono);
+	font-size: 9px;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--pfc-tech);
+}
+.pfc-row-state {
+	font-family: var(--pfc-mono);
+	font-size: 9px;
+	letter-spacing: 0.2em;
+	color: var(--pfc-lime);
+}
+.pfc-row-bar {
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	width: 2px;
+	background: var(--pfc-lime);
+	transform: scaleY(0);
+	transform-origin: top;
+	transition: transform 0.35s var(--pfc-ease);
+}
+.pfc-row.is-active .pfc-row-bar { transform: scaleY(1); }
+
+/* authorization */
+.pfc-auth {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 12px 14px;
+	border: 1px solid var(--pfc-line);
+	background: rgba(243, 241, 233, 0.03);
+	opacity: 0;
+	transform: translateY(8px);
+	transition: opacity 0.5s var(--pfc-ease), transform 0.5s var(--pfc-ease);
+}
+.pfc-auth.is-on { opacity: 1; transform: none; }
+.pfc-auth-name {
+	display: block;
+	font-family: var(--pfc-display);
+	font-size: 22px;
+	text-transform: uppercase;
+	letter-spacing: 0.01em;
+}
+.pfc-auth-role,
+.pfc-auth-key {
+	font-family: var(--pfc-mono);
+	font-size: 9px;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: var(--pfc-tech);
+}
+.pfc-auth-state { text-align: right; }
+.pfc-auth-key { display: block; margin-bottom: 5px; }
+.pfc-auth-value {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	font-family: var(--pfc-mono);
+	font-size: 11px;
+	letter-spacing: 0.2em;
+	color: var(--pfc-lime);
+}
+
+/* grounded answer */
+.pfc-answer {
+	position: relative;
+	opacity: 0;
+	transform: translateY(8px);
+	transition: opacity 0.6s var(--pfc-ease), transform 0.6s var(--pfc-ease);
+}
+.pfc-answer.is-on { opacity: 1; transform: none; }
+.pfc-answer-text {
+	margin: 0;
+	padding-left: 14px;
+	border-left: 2px solid var(--pfc-lime);
+	font-family: var(--pfc-ui);
+	font-size: clamp(14px, 1.25vw, 17px);
+	line-height: 1.5;
+	color: var(--pfc-bone);
+}
+
+/* sources */
+.pfc-cites {
+	display: grid;
+	gap: 6px;
+	opacity: 0;
+	transition: opacity 0.6s var(--pfc-ease) 0.1s;
+}
+.pfc-cites.is-on { opacity: 1; }
+.pfc-cite {
+	display: grid;
+	grid-template-columns: 34px 1fr;
+	align-items: baseline;
+	gap: 10px;
+	padding: 7px 8px;
+	border: 1px solid transparent;
+	transition: border-color 0.3s linear, background 0.3s linear;
+}
+.pfc-cite.is-active {
+	border-color: rgba(200, 255, 61, 0.4);
+	background: rgba(200, 255, 61, 0.06);
+}
+.pfc-cite-ref {
+	font-family: var(--pfc-mono);
+	font-size: 10px;
+	color: var(--pfc-lime);
+}
+.pfc-cite-title {
+	display: block;
+	font-family: var(--pfc-ui);
+	font-size: 12px;
+	color: rgba(243, 241, 233, 0.9);
+}
+.pfc-cite-section {
+	display: block;
+	margin-top: 2px;
+	font-family: var(--pfc-mono);
+	font-size: 9px;
+	letter-spacing: 0.14em;
+	color: var(--pfc-tech);
+}
+
+.pfc-panel-foot {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 18px;
+	margin: 4px -14px -6px -34px;
+	padding: 10px 14px 0 34px;
+	border-top: 1px solid var(--pfc-line);
+	font-family: var(--pfc-mono);
+	font-size: 9px;
+	letter-spacing: 0.2em;
+	color: var(--pfc-tech);
+}
+
+/* ------------------------------------------------------------ marginalia */
+
+.pfc-annotations {
+	position: absolute;
+	inset: 0;
+	z-index: 2;
+	pointer-events: none;
+	opacity: var(--pf-settle);
+}
+/* Wrapper that contains both the annotation list and the CTA so they always
+   move together. Rendered inside the pfc-type block so they never overlap the text. */
+.pfc-ann-group {
+	margin-top: clamp(16px, 2.5vh, 24px);
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0;
+	pointer-events: auto;
+	opacity: var(--pf-settle);
+}
+.pfc-ann-stack {
+	display: grid;
+	gap: 7px;
+}
+.pfc-ann {
+	display: grid;
+	grid-template-columns: 14px 1fr;
+	align-items: center;
+	gap: 9px;
+	font-family: var(--pfc-mono);
+	font-size: 9px;
+	letter-spacing: 0.26em;
+	text-transform: uppercase;
+	color: var(--pfc-tech);
+	white-space: nowrap;
+}
+.pfc-ann-tick {
+	width: 14px;
+	height: 1px;
+	background: currentColor;
+	opacity: 0.7;
+	flex-shrink: 0;
+}
+.pfc-ann.tone-lime { color: rgba(200, 255, 61, 0.72); }
+.pfc-ann.tone-bone { color: rgba(243, 241, 233, 0.66); }
+
+/* CTA button rendered below 05 / ANSWER in the annotation group */
+.pfc-ann-cta-wrap {
+	margin-top: 14px;
+	pointer-events: auto;
+}
+.pfc-ann-cta {
+	display: block;
+	padding: 10px 18px;
+	border: 1px solid rgba(200, 255, 61, 0.5);
+	background: transparent;
+	color: var(--pfc-lime);
+	font-family: var(--pfc-mono);
+	font-size: 10px;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition: background 0.4s var(--pfc-ease), color 0.4s var(--pfc-ease);
+}
+.pfc-ann-cta:hover {
+	background: var(--pfc-lime);
+	color: #0a0c08;
+}
+
+
+.pfc-ann-float {
+	position: absolute;
+	font-family: var(--pfc-mono);
+	font-size: 9px;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+	color: var(--pfc-tech);
+}
+.pfc-ann-float b {
+	display: block;
+	margin-top: 4px;
+	font-weight: 400;
+	color: rgba(243, 241, 233, 0.72);
+}
+.pfc-ann-tenant { right: clamp(18px, 4vw, 72px); top: clamp(20px, 5vh, 58px); text-align: right; }
+.pfc-ann-indexed { left: 42%; top: clamp(20px, 5vh, 58px); }
+.pfc-ann-access { left: 34%; bottom: 22%; color: rgba(200, 255, 61, 0.6); }
+.pfc-ann-system { right: clamp(18px, 4vw, 72px); bottom: clamp(96px, 15vh, 140px); }
+
+/* The hero's circular demo portal, arrived: a small system marker. */
+.pfc-marker-cta {
+	position: absolute;
+	left: 50%;
+	bottom: clamp(70px, 12vh, 118px);
+	z-index: 3;
+	display: inline-flex;
+	align-items: center;
+	gap: 10px;
+	padding: 8px 14px;
+	border: 1px solid rgba(200, 255, 61, 0.28);
+	border-radius: 999px;
+	font-family: var(--pfc-mono);
+	font-size: 9px;
+	letter-spacing: 0.26em;
+	color: rgba(200, 255, 61, 0.72);
+	transform: translate(-50%, calc(var(--pf-room) * 4vh)) scale(calc(1 - var(--pf-room) * 0.12));
+	/* Hidden until the hero's own portal has receded: two circular controls on
+	   top of each other is what read as "doubled". */
+	opacity: calc(var(--pf-type) * 0.8);
+}
+.pfc-marker-ring {
+	width: 10px;
+	height: 10px;
+	border: 1px solid currentColor;
+	border-radius: 50%;
+}
+
+/* ---------------------------------------------------------------- footer */
+
+.pfc-foot {
+	position: absolute;
+	left: clamp(18px, 4vw, 72px);
+	right: clamp(18px, 4vw, 72px);
+	bottom: clamp(20px, 4vh, 44px);
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 28px;
+	padding-top: 14px;
+	border-top: 1px solid var(--pfc-line);
+	opacity: var(--pf-settle);
+}
+.pfc-foot-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 14px;
+	font-family: var(--pfc-mono);
+	font-size: 9px;
+	letter-spacing: 0.26em;
+	text-transform: uppercase;
+	color: var(--pfc-muted);
+}
+.pfc-foot-list li + li::before {
+	content: "//";
+	margin-right: 14px;
+	color: var(--pfc-tech);
+}
+.pfc-foot-note {
+	max-width: 34ch;
+	margin: 0;
+	text-align: right;
+	font-family: var(--pfc-mono);
+	font-size: 9px;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	line-height: 1.7;
+	color: var(--pfc-tech);
+}
+
+/* ------------------------------------------------------------ responsive */
+
+@media (max-width: 1180px) {
+	.pfc-type { width: min(72vw, 760px); }
+	.pfc-instrument { width: min(54vw, 520px); }
+	.pfc-doc-ambient { display: none; }
+	.pfc-ann-indexed,
+	.pfc-ann-access { display: none; }
+}
+
+/* Mobile recomposes rather than shrinking: the scene stops being pinned and
+   becomes a vertical narrative, but it is the same room, the same artifacts
+   and the same trace -- the continuity is preserved, the choreography is not. */
+@media (max-width: 860px) {
+	.pfc {
+		height: auto;
+		--pf: 1;
+	}
+	.pfc-stage {
+		position: relative;
+		height: auto;
+		padding-bottom: 40px;
+	}
+	.pfc-env { position: absolute; }
+	.pfc-traces,
+	.pfc-marker-cta { display: none; }
+	/* On mobile, hide decorative annotations but keep the CTA wrap visible
+	   by only hiding the float labels and the scroll-pinned wrappers. */
+	.pfc-annotations .pfc-ann-float,
+	.pfc-annotations .pfc-ann-stack { display: none; }
+	/* Show the CTA group in a natural flow position on mobile */
+	.pfc-annotations {
+		position: relative;
+		inset: auto;
+		opacity: 1;
+		pointer-events: auto;
+	}
+	.pfc-ann-group {
+		margin-top: 32px;
+	}
+	.pfc-frame {
+		display: grid;
+		gap: 28px;
+		padding: 88px 20px 40px;
+		height: auto;
+	}
+	.pfc-chapter,
+	.pfc-type,
+	.pfc-instrument,
+	.pfc-foot {
+		position: relative;
+		left: auto;
+		right: auto;
+		top: auto;
+		bottom: auto;
+		width: auto;
+		transform: none;
+	}
+	.pfc-chapter { justify-self: start; }
+	.pfc-heading { font-size: clamp(42px, 13vw, 72px); }
+	.pfc-line-nova,
+	.pfc-line-proof { margin-left: 0; }
+	.pfc-docs {
+		position: relative;
+		inset: auto;
+		display: grid;
+		gap: 12px;
+	}
+	.pfc-doc {
+		position: relative;
+		left: auto;
+		top: auto;
+		width: 100%;
+		transform: none;
+	}
+	.pfc-doc-ref { right: 12px; }
+	.pfc-foot {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 14px;
+	}
+	.pfc-foot-note { text-align: left; }
+}
+
+/* --------------------------------------------------------- reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+	/* The hook pins progress at 1; here we also stop anything that would
+	   still move. Nothing is removed -- the section is simply already
+	   established when it arrives. */
+	.pfc { --pf: 1; }
+	.pfc-stage { position: relative; height: auto; }
+	.pfc *,
+	.pfc *::before,
+	.pfc *::after {
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+	}
+}

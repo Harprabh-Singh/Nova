@@ -1,0 +1,12 @@
+CREATE INDEX IF NOT EXISTS idx_permissions_tenant_role ON permissions (tenant_id, role_key);
+CREATE INDEX IF NOT EXISTS idx_users_tenant ON users (tenant_id);
+CREATE INDEX IF NOT EXISTS idx_documents_tenant ON documents (tenant_id, status);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_documents_tenant_filename ON documents (tenant_id, filename);
+CREATE INDEX IF NOT EXISTS idx_versions_tenant_doc ON document_versions (tenant_id, document_id, status);
+CREATE INDEX IF NOT EXISTS idx_chunks_tenant ON document_chunks (tenant_id);
+CREATE INDEX IF NOT EXISTS idx_chunks_version ON document_chunks (tenant_id, version_id);
+CREATE INDEX IF NOT EXISTS idx_conversations_tenant_user ON conversations (tenant_id, user_id, updated_at);
+CREATE INDEX IF NOT EXISTS idx_messages_tenant_conv ON messages (tenant_id, conversation_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_citations_tenant_msg ON citations (tenant_id, message_id);
+CREATE INDEX IF NOT EXISTS idx_activity_tenant ON activity_logs (tenant_id, created_at);
+CREATE INDEX IF NOT EXISTS idx_incidents_tenant ON incidents (tenant_id, created_at);

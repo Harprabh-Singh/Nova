@@ -1,0 +1,24 @@
+{
+  "name": "nova-actions-functions",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NOVA Actions - Azure Functions app that executes governed enterprise actions (Phase 8).",
+  "type": "module",
+  "main": "dist/src/index.js",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test --import tsx test/*.test.ts",
+    "start": "npm run build && func start"
+  },
+  "dependencies": {
+    "@azure/functions": "^4.5.1"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3"
+  }
+}

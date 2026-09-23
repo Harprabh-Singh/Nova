@@ -1,0 +1,825 @@
+/* ============================================================================
+   NOVA — THE EVIDENCE WALL  ("By the numbers")
+
+   The chapter after the guarantee grid, deliberately quieter: darker room,
+   fewer objects, one continuous wall of four bays sharing hairline dividers
+   and a single baseline.
+
+   Depth is layering, shadow, scale and a slow parallax — no 3D anywhere.
+   ========================================================================== */
+
+.nbr {
+	--n-bg: #060807;
+	--n-bone: #f3f1e9;
+	--n-muted: rgba(243, 241, 233, 0.6);
+	--n-tech: rgba(243, 241, 233, 0.34);
+	--n-faint: rgba(243, 241, 233, 0.2);
+	--n-lime: #c8ff3d;
+	--n-line: rgba(243, 241, 233, 0.13);
+	--n-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+	--n-display: "Anton", "Archivo Black", Impact, "Arial Narrow", sans-serif;
+	--n-ui: "Inter", system-ui, -apple-system, sans-serif;
+	--n-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+	position: relative;
+	isolation: isolate;
+	background: var(--n-bg);
+	color: var(--n-bone);
+	padding: clamp(76px, 11vh, 132px) 0 clamp(60px, 8vh, 96px);
+	overflow: hidden;
+}
+
+/* ------------------------------------------------------------- the room */
+
+.nbr-env {
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+}
+.nbr-env > * {
+	position: absolute;
+	inset: 0;
+}
+
+/* Same building as every other section, pushed further into shadow than the
+   guarantee wall — authority comes from restraint here, not from spectacle. */
+.nbr-env-image {
+	background: url("/assets/nova/hero-architecture.webp") center 58% / cover no-repeat;
+	filter: grayscale(0.42) brightness(0.24) contrast(1.1);
+	opacity: 0.42;
+	transform: translateZ(0) scale(1.04);
+}
+
+/* The top of the grade matches the bottom of the guarantee section exactly,
+   so the two rooms hand over with no cut. Light lifts only after the
+   headline has landed. */
+.nbr-env-grade {
+	background:
+		linear-gradient(
+			180deg,
+			#070908 0%,
+			rgba(6, 8, 7, 0.97) 10%,
+			rgba(6, 8, 7, 0.82) 40%,
+			rgba(6, 8, 7, 0.88) 74%,
+			#060807 100%
+		),
+		radial-gradient(100% 60% at 50% 58%, rgba(200, 255, 61, 0.035), transparent 66%);
+}
+
+/* A single soft shaft entering from the upper architecture. */
+.nbr-env-shaft {
+	background: linear-gradient(196deg, rgba(243, 241, 233, 0.07) 0%, transparent 42%);
+	mask-image: linear-gradient(180deg, #000, transparent 62%);
+}
+
+/* Structural bays, on the same rhythm as the four panels below. */
+.nbr-env-columns {
+	background-image: repeating-linear-gradient(
+		90deg,
+		transparent 0 calc(100% / 4 - 1px),
+		rgba(243, 241, 233, 0.045) calc(100% / 4 - 1px) calc(100% / 4)
+	);
+	mask-image: linear-gradient(180deg, transparent, #000 18%, #000 70%, transparent);
+	opacity: 0.8;
+}
+
+/* The same 120px survey module the hero and the guarantee wall use. */
+.nbr-env-grid {
+	background-image:
+		linear-gradient(90deg, rgba(243, 241, 233, 0.04) 1px, transparent 1px),
+		linear-gradient(180deg, rgba(243, 241, 233, 0.04) 1px, transparent 1px);
+	background-size: 120px 120px;
+	mask-image: radial-gradient(92% 72% at 50% 46%, #000 18%, transparent 80%);
+}
+
+/* Dark reflective floor under the wall. */
+.nbr-env-floor {
+	top: auto;
+	height: 34%;
+	background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.72) 62%, rgba(0, 0, 0, 0.88));
+}
+
+.nbr-env-vignette {
+	background: radial-gradient(118% 88% at 50% 44%, transparent 42%, rgba(0, 0, 0, 0.78) 100%);
+}
+
+/* Shared grain, same treatment as every other section. */
+.nbr-env-grain {
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+	opacity: 0.04;
+	mix-blend-mode: overlay;
+}
+
+/* The seam: the guarantee grid's card edges continue down into this room as
+   structural uprights, then converge onto the four bays. */
+.nbr-seam {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	height: clamp(90px, 13vh, 170px);
+	z-index: 1;
+	pointer-events: none;
+	background-image: repeating-linear-gradient(
+		90deg,
+		transparent 0 calc(100% / 3 - 1px),
+		rgba(243, 241, 233, 0.16) calc(100% / 3 - 1px) calc(100% / 3)
+	);
+	mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.9), transparent);
+}
+
+/* ---------------------------------------------------------------- layout */
+
+.nbr-inner {
+	position: relative;
+	z-index: 2;
+	width: min(1480px, 100% - clamp(24px, 5vw, 96px));
+	margin: 0 auto;
+}
+
+/* ---------------------------------------------------------------- header */
+
+.nbr-head {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	grid-template-areas:
+		"kicker aside"
+		"title  aside"
+		"rule   rule";
+	align-items: end;
+	column-gap: clamp(24px, 4vw, 72px);
+}
+
+.nbr-kicker {
+	grid-area: kicker;
+	font-family: var(--n-mono);
+	font-size: 10px;
+	letter-spacing: 0.34em;
+	text-transform: uppercase;
+	color: var(--n-lime);
+}
+.nbr-kicker::before {
+	content: "— ";
+	color: var(--n-tech);
+}
+
+/* Stacked lines, clamped so the display face never runs past the frame —
+   including when it falls back to a wider system grotesk. */
+.nbr-title {
+	grid-area: title;
+	margin: clamp(10px, 1.4vh, 18px) 0 0;
+	font-family: var(--n-display);
+	font-weight: 400;
+	font-size: clamp(40px, 6vw, 112px);
+	line-height: 0.9;
+	letter-spacing: -0.015em;
+	text-transform: uppercase;
+	max-width: 100%;
+	overflow-wrap: break-word;
+}
+.nbr-title .solid,
+.nbr-title .outline {
+	display: block;
+}
+.nbr-title .solid {
+	color: var(--n-bone);
+}
+/* The section's signature: thin lime outline, no glow. */
+.nbr-title .outline {
+	color: transparent;
+	-webkit-text-stroke: 1px var(--n-lime);
+	text-stroke: 1px var(--n-lime);
+}
+
+.nbr-head-aside {
+	grid-area: aside;
+	max-width: 280px;
+	text-align: right;
+}
+.nbr-lede {
+	margin: 0;
+	font-family: var(--n-ui);
+	font-size: 13px;
+	line-height: 1.5;
+	color: var(--n-muted);
+}
+.nbr-sig {
+	margin: 12px 0 0;
+	font-family: var(--n-mono);
+	font-size: 9px;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: var(--n-tech);
+}
+
+.nbr-head-rule {
+	grid-area: rule;
+	display: block;
+	height: 1px;
+	margin-top: clamp(20px, 3vh, 34px);
+	background: linear-gradient(90deg, var(--n-faint), var(--n-line) 40%, transparent);
+}
+
+/* ------------------------------------------------------------- the wall */
+
+.nbr-wall {
+	position: relative;
+	margin-top: clamp(34px, 5vh, 62px);
+}
+
+/* Thin structural uprights framing the wall. */
+.nbr-wall-upright {
+	position: absolute;
+	top: -14px;
+	bottom: -14px;
+	width: 1px;
+	background: linear-gradient(180deg, transparent, var(--n-faint) 18%, var(--n-faint) 82%, transparent);
+}
+.nbr-wall-upright.left {
+	left: -1px;
+}
+.nbr-wall-upright.right {
+	right: -1px;
+}
+
+/* Four bays, no gap: they share dividers so the wall reads as one object. */
+.nbr-bays {
+	display: grid;
+	grid-template-columns: repeat(4, minmax(0, 1fr));
+	gap: 0;
+	border-block: 1px solid var(--n-line);
+}
+
+/* One continuous baseline plus a faint reflection into the floor. */
+.nbr-wall-base {
+	display: block;
+	height: 1px;
+	margin-top: 10px;
+	background: linear-gradient(90deg, transparent, var(--n-faint) 12%, var(--n-faint) 88%, transparent);
+}
+.nbr-wall-reflect {
+	display: block;
+	height: clamp(40px, 6vh, 74px);
+	background: linear-gradient(180deg, rgba(200, 255, 61, 0.05), transparent 70%);
+	mask-image: linear-gradient(180deg, #000, transparent);
+	opacity: 0.7;
+}
+
+/* ----------------------------------------------------------------- bays */
+
+.nbr-bay {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	padding: clamp(22px, 2.4vw, 34px) clamp(18px, 1.9vw, 28px) clamp(18px, 2vh, 26px);
+	background: rgba(7, 9, 8, 0.84);
+	border-left: 1px solid var(--n-line);
+	border-radius: 0;
+	outline: none;
+	transition:
+		transform 400ms var(--n-ease),
+		background 400ms var(--n-ease),
+		border-color 400ms var(--n-ease),
+		opacity 400ms var(--n-ease);
+}
+.nbr-bay:first-child {
+	border-left: 0;
+}
+
+/* The outer two bays carry a very faint lime wash — small hierarchy, no glow. */
+.nbr-bay.is-lit {
+	background:
+		radial-gradient(120% 70% at 50% 0%, rgba(200, 255, 61, 0.055), transparent 62%),
+		rgba(7, 9, 8, 0.84);
+}
+/* 02 is the darkest bay, 03 charcoal — pacing across the wall. */
+.nbr-bay[data-bay="privacy"] {
+	background: rgba(4, 6, 5, 0.9);
+}
+.nbr-bay[data-bay="access"] {
+	background: rgba(10, 12, 11, 0.86);
+}
+
+/* Staged entry: the wall is revealed bay by bay. */
+@media (prefers-reduced-motion: no-preference) {
+	.nbr-bay {
+		animation: nbr-bay-in 700ms var(--n-ease) both;
+		animation-delay: calc(var(--i) * 100ms);
+	}
+	.nbr-bay > * {
+		animation: nbr-part-in 560ms var(--n-ease) both;
+		animation-delay: calc(var(--i) * 100ms + var(--p, 0ms));
+	}
+	/* value, then description, then diagram, then metadata */
+	.nbr-bay-head {
+		--p: 40ms;
+	}
+	.nbr-value {
+		--p: 90ms;
+	}
+	.nbr-value-label,
+	.nbr-bay-title {
+		--p: 170ms;
+	}
+	.nbr-bay-copy {
+		--p: 230ms;
+	}
+	.nbr-bay-dia {
+		--p: 300ms;
+	}
+	.nbr-bay-meta {
+		--p: 380ms;
+	}
+}
+
+@keyframes nbr-bay-in {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+@keyframes nbr-part-in {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+		filter: blur(3px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+		filter: blur(0);
+	}
+}
+
+/* bay header: number upper-left, eyebrow beside it */
+.nbr-bay-head {
+	display: flex;
+	align-items: baseline;
+	gap: 10px;
+}
+.nbr-bay-no {
+	font-family: var(--n-mono);
+	font-size: 12px;
+	letter-spacing: 0.18em;
+	color: var(--n-bone);
+	opacity: 0.4;
+	transition: opacity 400ms var(--n-ease);
+}
+.nbr-bay-eyebrow {
+	font-family: var(--n-mono);
+	font-size: 9px;
+	letter-spacing: 0.24em;
+	text-transform: uppercase;
+	color: var(--n-tech);
+}
+
+/* the value — the loudest thing in the bay */
+.nbr-value {
+	margin: clamp(18px, 2.6vh, 30px) 0 0;
+	font-family: var(--n-display);
+	font-weight: 400;
+	font-size: clamp(52px, 5.4vw, 96px);
+	line-height: 0.86;
+	letter-spacing: -0.02em;
+	color: var(--n-lime);
+	transition: color 400ms var(--n-ease);
+}
+.nbr-value-label {
+	margin: 12px 0 0;
+	max-width: 30ch;
+	font-family: var(--n-mono);
+	font-size: 9.5px;
+	line-height: 1.6;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--n-tech);
+}
+
+.nbr-bay-title {
+	margin: clamp(18px, 2.4vh, 28px) 0 0;
+	font-family: var(--n-ui);
+	font-size: clamp(15px, 1.15vw, 19px);
+	font-weight: 700;
+	line-height: 1.15;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+	color: var(--n-bone);
+}
+.nbr-bay-title span {
+	display: block;
+}
+
+.nbr-bay-copy {
+	margin: 12px 0 0;
+	max-width: 44ch;
+	font-family: var(--n-ui);
+	font-size: 13.5px;
+	line-height: 1.55;
+	color: var(--n-muted);
+}
+
+.nbr-bay-dia {
+	margin-top: auto;
+	padding-top: clamp(20px, 3vh, 34px);
+}
+
+.nbr-bay-meta {
+	margin-top: clamp(16px, 2.2vh, 24px);
+	padding-top: 16px;
+	border-top: 1px solid var(--n-line);
+	font-family: var(--n-mono);
+	font-size: 9px;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	color: var(--n-tech);
+	transition: color 400ms var(--n-ease);
+}
+
+/* --------------------------------------------------------------- hover */
+
+.nbr-bay:hover,
+.nbr-bay:focus-visible {
+	transform: translateY(-5px);
+	border-color: rgba(243, 241, 233, 0.26);
+	background: rgba(10, 13, 11, 0.9);
+}
+.nbr-bay.is-lit:hover,
+.nbr-bay.is-lit:focus-visible {
+	background:
+		radial-gradient(120% 70% at 50% 0%, rgba(200, 255, 61, 0.09), transparent 62%),
+		rgba(10, 13, 11, 0.9);
+}
+.nbr-bay:hover .nbr-bay-no,
+.nbr-bay:focus-visible .nbr-bay-no {
+	opacity: 0.72;
+}
+.nbr-bay:hover .nbr-bay-meta,
+.nbr-bay:focus-visible .nbr-bay-meta {
+	color: var(--n-muted);
+}
+.nbr-bay:focus-visible {
+	outline: 2px solid var(--n-lime);
+	outline-offset: -2px;
+}
+
+/* Neighbours recede slightly so the hovered bay reads as the focus. */
+@media (hover: hover) {
+	.nbr-bays:hover .nbr-bay:not(:hover) {
+		opacity: 0.84;
+	}
+}
+
+/* ------------------------------------------------------------ diagrams */
+
+.nbr-dia {
+	width: 100%;
+	max-width: 260px;
+	height: auto;
+	overflow: visible;
+}
+
+.nbr-node {
+	fill: rgba(243, 241, 233, 0.03);
+	stroke: var(--n-faint);
+	stroke-width: 1;
+	transition:
+		stroke 400ms var(--n-ease),
+		fill 400ms var(--n-ease);
+}
+.nbr-wire {
+	fill: none;
+	stroke: rgba(243, 241, 233, 0.24);
+	stroke-width: 1;
+	transition: stroke 400ms var(--n-ease);
+}
+.nbr-dot {
+	fill: rgba(243, 241, 233, 0.3);
+	transition: fill 400ms var(--n-ease);
+}
+.nbr-arrow {
+	fill: none;
+	stroke: rgba(243, 241, 233, 0.3);
+	stroke-width: 1;
+	transition: stroke 400ms var(--n-ease);
+}
+
+.nbr-t {
+	font-family: var(--n-mono);
+	font-size: 8px;
+	letter-spacing: 0.14em;
+	fill: var(--n-tech);
+}
+.nbr-t-key {
+	fill: rgba(243, 241, 233, 0.72);
+	letter-spacing: 0.18em;
+}
+.nbr-t-marker {
+	fill: var(--n-lime);
+	opacity: 0.7;
+	transition: opacity 400ms var(--n-ease);
+}
+.nbr-t-src {
+	fill: rgba(243, 241, 233, 0.55);
+}
+.nbr-t-meta {
+	font-size: 7px;
+	letter-spacing: 0.2em;
+}
+.nbr-t-live {
+	fill: var(--n-lime);
+	opacity: 0.78;
+	letter-spacing: 0.18em;
+	transition: opacity 400ms var(--n-ease);
+}
+.nbr-t-dead {
+	fill: rgba(243, 241, 233, 0.3);
+	letter-spacing: 0.18em;
+}
+
+/* 01 — the trace lights up on hover */
+.nbr-bay:hover .nbr-wire,
+.nbr-bay:focus-visible .nbr-wire {
+	stroke: rgba(200, 255, 61, 0.5);
+}
+.nbr-bay:hover .nbr-dot,
+.nbr-bay:focus-visible .nbr-dot {
+	fill: var(--n-lime);
+}
+.nbr-bay:hover .nbr-t-marker,
+.nbr-bay:focus-visible .nbr-t-marker {
+	opacity: 1;
+}
+.nbr-bay:hover .nbr-node,
+.nbr-bay:focus-visible .nbr-node {
+	stroke: rgba(243, 241, 233, 0.34);
+}
+
+/* 02 — the barrier hardens, the dead path stays dead */
+.nbr-barrier {
+	fill: none;
+	stroke: rgba(243, 241, 233, 0.26);
+	stroke-width: 1;
+	stroke-dasharray: 5 4;
+	transition:
+		stroke 400ms var(--n-ease),
+		stroke-width 400ms var(--n-ease);
+}
+.nbr-wire-dead,
+.nbr-strike,
+.nbr-cross {
+	fill: none;
+	stroke: rgba(243, 241, 233, 0.26);
+	stroke-width: 1;
+}
+.nbr-wire-live {
+	stroke: rgba(200, 255, 61, 0.55);
+}
+.nbr-bay[data-bay="privacy"]:hover .nbr-barrier,
+.nbr-bay[data-bay="privacy"]:focus-visible .nbr-barrier {
+	stroke: rgba(243, 241, 233, 0.55);
+	stroke-width: 1.4;
+}
+.nbr-bay[data-bay="privacy"]:hover .nbr-wire-dead,
+.nbr-bay[data-bay="privacy"]:hover .nbr-strike,
+.nbr-bay[data-bay="privacy"]:hover .nbr-cross,
+.nbr-bay[data-bay="privacy"]:focus-visible .nbr-wire-dead,
+.nbr-bay[data-bay="privacy"]:focus-visible .nbr-strike,
+.nbr-bay[data-bay="privacy"]:focus-visible .nbr-cross {
+	stroke: rgba(243, 241, 233, 0.34);
+}
+.nbr-bay[data-bay="privacy"]:hover .nbr-wire-live,
+.nbr-bay[data-bay="privacy"]:focus-visible .nbr-wire-live {
+	stroke: var(--n-lime);
+}
+
+/* 04 — the handover illuminates */
+.nbr-node-live {
+	stroke: rgba(200, 255, 61, 0.34);
+}
+.nbr-pulse {
+	fill: var(--n-lime);
+	opacity: 0.6;
+	transition: opacity 400ms var(--n-ease);
+}
+.nbr-bay[data-bay="action"]:hover .nbr-pulse,
+.nbr-bay[data-bay="action"]:focus-visible .nbr-pulse {
+	opacity: 1;
+}
+.nbr-bay[data-bay="action"]:hover .nbr-node-live,
+.nbr-bay[data-bay="action"]:focus-visible .nbr-node-live {
+	stroke: rgba(200, 255, 61, 0.6);
+}
+
+/* 03 — the classification ladder */
+.nbr-dia-access {
+	display: flex;
+	align-items: flex-end;
+	justify-content: space-between;
+	gap: 16px;
+	max-width: none;
+}
+.nbr-ladder {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: 9px;
+	flex: 1 1 auto;
+	min-width: 0;
+}
+.nbr-tier {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-family: var(--n-mono);
+	font-size: 8.5px;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--n-tech);
+	transition: color 400ms var(--n-ease);
+}
+.nbr-tier-bar {
+	position: relative;
+	flex: 0 0 auto;
+	width: 54px;
+	height: 3px;
+	background: rgba(243, 241, 233, 0.1);
+}
+/* Each tier fills further than the last: progressively active levels. */
+.nbr-tier-bar::after {
+	content: "";
+	position: absolute;
+	inset: 0 auto 0 0;
+	width: var(--fill);
+	background: rgba(243, 241, 233, 0.34);
+	transition:
+		background 400ms var(--n-ease),
+		width 400ms var(--n-ease);
+	transition-delay: var(--d);
+}
+.nbr-tier-name {
+	white-space: nowrap;
+}
+.nbr-tier-dot {
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: rgba(243, 241, 233, 0.16);
+	transition: background 400ms var(--n-ease);
+}
+/* RESTRICTED is the enforced ceiling. */
+.nbr-tier.is-ceiling {
+	color: var(--n-lime);
+}
+.nbr-tier.is-ceiling .nbr-tier-bar::after {
+	background: rgba(200, 255, 61, 0.55);
+}
+.nbr-tier.is-ceiling .nbr-tier-dot {
+	background: var(--n-lime);
+}
+.nbr-bay[data-bay="access"]:hover .nbr-tier,
+.nbr-bay[data-bay="access"]:focus-visible .nbr-tier {
+	color: var(--n-muted);
+}
+.nbr-bay[data-bay="access"]:hover .nbr-tier.is-ceiling,
+.nbr-bay[data-bay="access"]:focus-visible .nbr-tier.is-ceiling {
+	color: var(--n-lime);
+}
+.nbr-bay[data-bay="access"]:hover .nbr-tier.is-ceiling .nbr-tier-bar::after,
+.nbr-bay[data-bay="access"]:focus-visible .nbr-tier.is-ceiling .nbr-tier-bar::after {
+	background: var(--n-lime);
+}
+.nbr-aside {
+	margin: 0;
+	flex: 0 0 auto;
+	font-family: var(--n-mono);
+	font-size: 8.5px;
+	line-height: 1.7;
+	letter-spacing: 0.16em;
+	text-transform: uppercase;
+	text-align: right;
+	color: rgba(243, 241, 233, 0.26);
+}
+
+/* --------------------------------------------------------------- footer */
+
+.nbr-foot {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 20px;
+	margin-top: clamp(26px, 4vh, 44px);
+	padding-top: 16px;
+	border-top: 1px solid var(--n-line);
+	font-family: var(--n-mono);
+	font-size: 9px;
+	letter-spacing: 0.2em;
+	text-transform: uppercase;
+	color: var(--n-tech);
+}
+
+/* ----------------------------------------------------------- responsive */
+
+@media (max-width: 1180px) {
+	.nbr-bays {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+	/* keep the shared-divider logic honest in a 2×2 wall */
+	.nbr-bay:nth-child(odd) {
+		border-left: 0;
+	}
+	.nbr-bay:nth-child(n + 3) {
+		border-top: 1px solid var(--n-line);
+	}
+	.nbr-seam {
+		background-image: repeating-linear-gradient(
+			90deg,
+			transparent 0 calc(100% / 2 - 1px),
+			rgba(243, 241, 233, 0.14) calc(100% / 2 - 1px) calc(100% / 2)
+		);
+	}
+}
+
+@media (max-width: 860px) {
+	.nbr-head {
+		grid-template-columns: minmax(0, 1fr);
+		grid-template-areas:
+			"kicker"
+			"title"
+			"aside"
+			"rule";
+	}
+	.nbr-head-aside {
+		max-width: none;
+		margin-top: 20px;
+		text-align: left;
+	}
+	.nbr-title {
+		font-size: clamp(36px, 9.4vw, 64px);
+	}
+	.nbr-bays {
+		grid-template-columns: minmax(0, 1fr);
+	}
+	.nbr-bay {
+		border-left: 0;
+	}
+	.nbr-bay + .nbr-bay {
+		border-top: 1px solid var(--n-line);
+	}
+	/* the value stays large on mobile — it is the point of the bay */
+	.nbr-value {
+		font-size: clamp(56px, 17vw, 84px);
+	}
+	.nbr-bay-dia {
+		padding-top: 22px;
+	}
+	.nbr-foot {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 8px;
+	}
+	/* no hover on touch: a press gives the bay a small lift instead */
+	.nbr-bay:active {
+		transform: translateY(-4px);
+		border-color: rgba(243, 241, 233, 0.26);
+	}
+}
+
+/* ------------------------------------------------------- reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+	.nbr-bay,
+	.nbr-bay > * {
+		animation: none !important;
+		opacity: 1;
+		transform: none;
+	}
+	.nbr-bay,
+	.nbr-node,
+	.nbr-wire,
+	.nbr-dot,
+	.nbr-barrier,
+	.nbr-tier,
+	.nbr-tier-bar::after,
+	.nbr-tier-dot,
+	.nbr-pulse,
+	.nbr-value,
+	.nbr-bay-no,
+	.nbr-bay-meta {
+		transition: none;
+	}
+	.nbr-bay:hover,
+	.nbr-bay:focus-visible,
+	.nbr-bay:active {
+		transform: none;
+	}
+	.nbr-env-image {
+		transform: none;
+	}
+}

@@ -1,0 +1,121 @@
+/* ==========================================================================
+   NOVA motion primitives — shared by every page.
+   Only transform / opacity / clip-path are animated.
+   ========================================================================== */
+
+:root {
+	--an-expo: cubic-bezier(0.16, 1, 0.3, 1);
+	--an-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--an-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ------------------------------------------------------ split text reveal */
+
+.an-word {
+	display: inline-block;
+	white-space: nowrap;
+}
+
+/* The clip is what makes characters "emerge" from the line. */
+.an-split {
+	display: block;
+	overflow: hidden;
+	padding-bottom: 0.1em;
+	margin-bottom: -0.1em;
+}
+
+.an-split .an-char {
+	display: inline-block;
+	transform: translate3d(0, 115%, 0) rotateX(-45deg);
+	transform-origin: 50% 100%;
+	will-change: transform;
+	transition: transform 1.15s var(--an-expo);
+}
+
+.an-split.an-revealed .an-char {
+	transform: translate3d(0, 0, 0) rotateX(0deg);
+}
+
+.an-revealed:not(.an-split) { opacity: 1; }
+
+/* Words that light up as the section is scrubbed. */
+.an-lit .an-word {
+	transition: opacity 0.18s linear;
+	will-change: opacity;
+}
+
+/* ----------------------------------------------------------- entrances */
+
+.an-rise {
+	opacity: 0;
+	transform: translate3d(0, 34px, 0);
+	transition: opacity 0.85s var(--an-expo), transform 0.85s var(--an-expo);
+}
+.an-rise.in {
+	opacity: 1;
+	transform: translate3d(0, 0, 0);
+}
+
+.an-fade {
+	opacity: 0;
+	transition: opacity 0.7s var(--an-expo);
+}
+.an-fade.in { opacity: 1; }
+
+/* ------------------------------------------------------------- tilt card */
+
+.an-tilt {
+	transform: perspective(900px);
+	transform-style: preserve-3d;
+	transition: transform 0.24s var(--an-smooth), box-shadow 0.24s var(--an-smooth);
+	will-change: transform;
+}
+
+/* --------------------------------------------------------- ambient pulse */
+
+@keyframes an-pulse {
+	0%, 100% { opacity: 0.32; transform: scaleY(0.8); }
+	50% { opacity: 1; transform: scaleY(1); }
+}
+
+@keyframes an-breathe {
+	0%, 100% { opacity: 0.45; transform: scale(0.94); }
+	50% { opacity: 0.85; transform: scale(1.04); }
+}
+
+.an-hint {
+	width: 1px;
+	height: 26px;
+	transform-origin: 50% 0;
+	animation: an-pulse 2.2s ease-in-out infinite;
+}
+
+/* Glow rendered as a gradient, never an animated blur filter. */
+.an-glow {
+	position: absolute;
+	inset: -40%;
+	pointer-events: none;
+	border-radius: 50%;
+	animation: an-breathe 6s ease-in-out infinite;
+	will-change: transform, opacity;
+}
+
+/* ------------------------------------------------------- spring underline */
+
+.an-underline {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: -6px;
+	height: 2px;
+	transform: scaleX(0);
+	transform-origin: 50% 50%;
+	transition: transform 0.42s var(--an-spring), background 0.4s linear;
+}
+.an-underline.on { transform: scaleX(1); }
+
+@media (prefers-reduced-motion: reduce) {
+	.an-split .an-char { transform: none !important; transition: none !important; }
+	.an-rise, .an-fade { opacity: 1 !important; transform: none !important; transition: none !important; }
+	.an-hint, .an-glow { animation: none !important; }
+}
