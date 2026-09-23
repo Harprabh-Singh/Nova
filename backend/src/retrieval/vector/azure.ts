@@ -360,3 +360,4 @@ export class AzureVectorStore implements VectorStore {
 		return { ok: true, detail: `Azure AI Search configured for index ${this.client.index} (no live probe performed).` }
 	}
 }
+// hist: 2026-09-23T07:52:06+05:30
