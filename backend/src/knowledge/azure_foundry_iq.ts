@@ -124,3 +124,4 @@ export class AzureKnowledgeProvider implements KnowledgeProvider {
 		return this.vectorStore.healthCheck()
 	}
 }
+// hist: 2026-09-23T10:16:57+05:30
