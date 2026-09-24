@@ -477,6 +477,17 @@ function buildConfig() {
 						agentId: str("FOUNDRY_AGENT_ID"),
 						deployment: str("FOUNDRY_MODEL_DEPLOYMENT"),
 						embeddingDeployment: str("AZURE_EMBEDDING_DEPLOYMENT"),
+						/**
+						 * Optional separate endpoint for the embedding deployment.
+						 * Defaults to FOUNDRY_ENDPOINT when not set.
+						 * Use AZURE_EMBEDDING_ENDPOINT when the embedding model is served
+						 * at the Azure AI Services resource level rather than the Foundry
+						 * project level, i.e.:
+						 *   https://<resource>.services.ai.azure.com   (resource level)
+						 * vs the project endpoint FOUNDRY_ENDPOINT which is:
+						 *   https://<resource>.services.ai.azure.com/api/projects/<project>
+						 */
+						embeddingEndpoint: (str("AZURE_EMBEDDING_ENDPOINT") || str("FOUNDRY_ENDPOINT")).replace(/\/+$/, ""),
 					},
 					search: {
 						endpoint: str("AZURE_SEARCH_ENDPOINT").replace(/\/+$/, ""),

@@ -76,9 +76,14 @@ async function load(config: EntraPublicConfig): Promise<IPublicClientApplication
 			},
 			system: {
 				loggerOptions: {
-					// Never log MSAL messages: they can contain token material.
-					loggerCallback: () => {},
+					loggerCallback: (level: number, message: string, containsPii: boolean) => {
+						if (containsPii) return;
+						// Exclude token/secret materials just in case, though piiLoggingEnabled is false.
+						if (message.toLowerCase().includes("token") || message.toLowerCase().includes("secret")) return;
+						console.log(`[MSAL] level=${level}: ${message}`);
+					},
 					piiLoggingEnabled: false,
+					logLevel: msal.LogLevel.Verbose,
 				},
 			},
 		})

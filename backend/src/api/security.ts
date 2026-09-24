@@ -142,7 +142,7 @@ export function contentSecurityPolicy(): string {
 		"font-src 'self' https://fonts.gstatic.com data:",
 		"img-src 'self' data: blob:",
 		"media-src 'self'",
-		"connect-src 'self'",
+		"connect-src 'self' https://login.microsoftonline.com",
 	].join("; ")
 }
 

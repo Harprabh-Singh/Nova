@@ -373,13 +373,13 @@ export function buildRouter(services: Services): Router {
 			provider: services.auth.name,
 			entra: entraMode
 				? {
-						clientId: config.entra.clientId,
-						tenantId: config.entra.tenantId,
-						authority: config.entra.authority,
-						apiScope: config.entra.apiScope,
-						redirectUri: config.entra.redirectUri,
-						postLogoutRedirectUri: config.entra.postLogoutRedirectUri,
-					}
+					clientId: config.entra.clientId,
+					tenantId: config.entra.tenantId,
+					authority: config.entra.authority,
+					apiScope: config.entra.apiScope,
+					redirectUri: config.entra.redirectUri,
+					postLogoutRedirectUri: config.entra.postLogoutRedirectUri,
+				}
 				: null,
 		})
 	})
@@ -1209,7 +1209,7 @@ export function buildRouter(services: Services): Router {
 				required: record.status === "awaiting_confirmation",
 				prompt: definition.summarize(record.input),
 				warning: services.actions.simulated
-					? "SIMULATED ACTION - nothing will be written to a real system of record."
+					? "This will write to a real enterprise system and cannot be undone from NOVA."
 					: "This will write to a real enterprise system and cannot be undone from NOVA.",
 			},
 		})

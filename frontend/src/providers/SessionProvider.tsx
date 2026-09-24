@@ -132,9 +132,20 @@ export function SessionProvider({ children }: { children: ReactNode }) {
 				let account: EntraAccount | null = null
 				try {
 					account = await initEntra(config)
-				} catch {
+				} catch (caught: any) {
+					const safeError =
+						caught && typeof caught === "object"
+							? {
+									name: caught.name,
+									errorCode: caught.errorCode,
+									message: caught.message,
+							  }
+							: { message: String(caught) }
+					
 					setAuthPhase("error")
-					setAuthError("Microsoft sign-in could not be completed. Please try again.")
+					setAuthError(
+						`Microsoft sign-in could not be completed. Error: ${safeError.name || "Unknown"} (${safeError.errorCode || "N/A"}) - ${safeError.message}`
+					)
 					return
 				}
 				setEntraAccount(account ?? getEntraAccount())

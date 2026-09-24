@@ -42,6 +42,11 @@ async function main(): Promise<void> {
 	const endpoint = required("FOUNDRY_ENDPOINT")
 	const chatDeployment = required("FOUNDRY_MODEL_DEPLOYMENT")
 	const embeddingDeployment = required("AZURE_EMBEDDING_DEPLOYMENT")
+	// AZURE_EMBEDDING_ENDPOINT is optional: when the embedding deployment is served
+	// at the Azure AI Services resource level rather than the Foundry project level,
+	// set it to the resource root (e.g. https://<resource>.services.ai.azure.com).
+	// Falls back to FOUNDRY_ENDPOINT when not set, preserving the original behaviour.
+	const embeddingEndpoint = (process.env.AZURE_EMBEDDING_ENDPOINT ?? "").trim() || endpoint
 	const project = (process.env.FOUNDRY_PROJECT ?? "").trim()
 	const apiKey = (process.env.AZURE_API_KEY ?? "").trim()
 	const bearerToken = (process.env.AZURE_ACCESS_TOKEN ?? "").trim()
@@ -57,6 +62,7 @@ async function main(): Promise<void> {
 	console.log(`  Endpoint:             ${endpoint}`)
 	console.log(`  Chat deployment:      ${chatDeployment}`)
 	console.log(`  Embedding deployment: ${embeddingDeployment}`)
+	console.log(`  Embedding endpoint:   ${embeddingEndpoint === endpoint ? embeddingEndpoint + " (same as FOUNDRY_ENDPOINT)" : embeddingEndpoint + " (AZURE_EMBEDDING_ENDPOINT)"}`)
 	console.log(`  Credential:           ${bearerToken ? "Entra bearer token" : "api-key"} ${mask(bearerToken || apiKey)}`)
 	console.log("")
 
@@ -101,7 +107,7 @@ async function main(): Promise<void> {
 	/* -------------------------- 2. embeddings --------------------------- */
 	try {
 		const embeddings = new AzureEmbeddingProvider({
-			endpoint,
+			endpoint: embeddingEndpoint,
 			deployment: embeddingDeployment,
 			apiKey: apiKey || undefined,
 			bearerToken: bearerToken || undefined,
