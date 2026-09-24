@@ -18,3 +18,4 @@ frontend/dist/
 
 # One-time marker written by scripts/demo-setup.ps1 after a successful forced Azure reindex.
 .demo-azure-search-reindexed
+// hist: 2026-09-24T09:44:47+05:30
